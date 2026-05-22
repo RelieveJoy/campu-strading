@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.mapper.StatsMapper">
+
+    <select id="countByCategory" resultType="com.campus.vo.OrderStatisticsVO">
+        select c.name as name, count(i.item_id) as value
+        from category c
+        left join item i on c.category_id = i.category_id
+        group by c.category_id, c.name
+        order by value desc
+    </select>
+
+    <select id="countByPriceRange" resultType="com.campus.vo.OrderStatisticsVO">
+        select
+            case
+                when price between 0 and 50 then '0-50'
+                when price between 50 and 100 then '50-100'
+                when price between 100 and 200 then '100-200'
+                else '200以上'
+            end as name,
+            count(*) as value
+        from item
+        where status != 0
+        group by name
+        order by
+            case
+                when price between 0 and 50 then 1
+                when price between 50 and 100 then 2
+                when price between 100 and 200 then 3
+                else 4
+            end
+    </select>
+
+    <select id="countTradeByDay" resultType="com.campus.vo.OrderStatisticsVO">
+        select date(create_time) as name, count(*) as value
+        from orders
+        where create_time >= date_sub(now(), interval 30 day)
+        group by date(create_time)
+        order by name
+    </select>
+
+</mapper>

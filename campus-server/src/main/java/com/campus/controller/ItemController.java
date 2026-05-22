@@ -67,6 +67,14 @@ public class ItemController {
         return Result.success(pageResult);
     }
 
+    @ApiOperation("首页商品列表（缓存）")
+    @GetMapping("/home")
+    public Result<List<ItemVO>> homeItems() {
+        log.info("查询首页商品");
+        List<ItemVO> list = itemService.getHomeItems();
+        return Result.success(list);
+    }
+
     @ApiOperation("商品详情")
     @GetMapping("/{id}")
     public Result<ItemDetailVO> getById(@PathVariable Long id) {

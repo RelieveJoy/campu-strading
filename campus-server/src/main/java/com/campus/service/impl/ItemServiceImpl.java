@@ -15,15 +15,19 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private ItemMapper itemMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public void add(ItemDTO itemDTO) {
@@ -98,5 +102,22 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemVO> getByUserId(Long userId) {
         return itemMapper.getByUserId(userId);
+    }
+
+    @Override
+    public List<ItemVO> getHomeItems() {
+        String key = "cache:home:items";
+        List<ItemVO> cached = (List<ItemVO>) redisTemplate.opsForValue().get(key);
+        if (cached != null) {
+            return cached;
+        }
+        ItemPageQueryDTO dto = new ItemPageQueryDTO();
+        dto.setPage(1);
+        dto.setPageSize(20);
+        dto.setStatus(1);
+        PageHelper.startPage(dto.getPage(), dto.getPageSize());
+        List<ItemVO> list = itemMapper.pageQuery(dto);
+        redisTemplate.opsForValue().set(key, list, 5, TimeUnit.MINUTES);
+        return list;
     }
 }

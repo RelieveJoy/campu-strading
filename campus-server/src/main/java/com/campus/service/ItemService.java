@@ -23,4 +23,6 @@ public interface ItemService {
     ItemDetailVO getById(Long itemId);
 
     List<ItemVO> getByUserId(Long userId);
+
+    List<ItemVO> getHomeItems();
 }
