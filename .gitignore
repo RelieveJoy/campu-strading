@@ -1,0 +1,23 @@
+**/target/
+.idea
+*.iml
+*.class
+
+# 敏感配置文件（含数据库密码、OSS密钥等）
+application-dev.yml
+application-prod.yml
+*.env
+
+# 测试文件
+*Test.java
+**/test/
+
+# 日志
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven
+dependency-reduced-pom.xml

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.mapper.ItemMapper">
+
+    <update id="update" parameterType="Item">
+        update item
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="originalPrice != null">original_price = #{originalPrice},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+        </set>
+        where item_id = #{itemId}
+    </update>
+
+    <select id="pageQuery" resultType="com.campus.vo.ItemVO">
+        select i.item_id, i.title, i.price, i.original_price, i.image_url,
+               i.view_count, i.status, i.create_time,
+               u.username as seller_name, c.name as category_name
+        from item i
+        left join user u on i.seller_id = u.user_id
+        left join category c on i.category_id = c.category_id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and i.title like concat('%', #{keyword}, '%')
+            </if>
+            <if test="categoryId != null">
+                and i.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and i.status = #{status}
+            </if>
+            <if test="minPrice != null">
+                and i.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                and i.price &lt;= #{maxPrice}
+            </if>
+        </where>
+        order by i.create_time desc
+    </select>
+
+    <select id="getDetailById" resultType="com.campus.vo.ItemDetailVO">
+        select i.item_id, i.title, i.description, i.price, i.original_price,
+               i.category_id, i.image_url, i.view_count, i.status, i.create_time,
+               i.seller_id, u.username as seller_name, u.phone as seller_phone,
+               c.name as category_name
+        from item i
+        left join user u on i.seller_id = u.user_id
+        left join category c on i.category_id = c.category_id
+        where i.item_id = #{itemId}
+    </select>
+
+    <select id="getByUserId" resultType="com.campus.vo.ItemVO">
+        select i.item_id, i.title, i.price, i.original_price, i.image_url,
+               i.view_count, i.status, i.create_time,
+               u.username as seller_name, c.name as category_name
+        from item i
+        left join user u on i.seller_id = u.user_id
+        left join category c on i.category_id = c.category_id
+        where i.seller_id = #{userId}
+        order by i.create_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.mapper.FavoriteMapper">
+
+    <select id="pageQueryByUserId" resultType="com.campus.vo.FavoriteVO">
+        select f.favorite_id, f.user_id, f.item_id, f.create_time,
+               i.title as item_title, i.image_url as item_image_url, i.price as item_price
+        from favorite f
+        left join item i on f.item_id = i.item_id
+        where f.user_id = #{userId}
+        order by f.create_time desc
+    </select>
+
+</mapper>

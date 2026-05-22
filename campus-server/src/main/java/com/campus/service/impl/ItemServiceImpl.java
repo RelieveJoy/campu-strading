@@ -1,0 +1,102 @@
+package com.campus.service.impl;
+
+import com.campus.constant.MessageConstant;
+import com.campus.context.BaseContext;
+import com.campus.dto.ItemDTO;
+import com.campus.dto.ItemPageQueryDTO;
+import com.campus.entity.Item;
+import com.campus.exception.ItemBusinessException;
+import com.campus.mapper.ItemMapper;
+import com.campus.result.PageResult;
+import com.campus.service.ItemService;
+import com.campus.vo.ItemDetailVO;
+import com.campus.vo.ItemVO;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ItemServiceImpl implements ItemService {
+
+    @Autowired
+    private ItemMapper itemMapper;
+
+    @Override
+    public void add(ItemDTO itemDTO) {
+        Item item = new Item();
+        BeanUtils.copyProperties(itemDTO, item);
+        item.setSellerId(BaseContext.getCurrentId());
+        item.setStatus(1);
+        item.setViewCount(0);
+        itemMapper.insert(item);
+    }
+
+    @Override
+    public void update(Long itemId, ItemDTO itemDTO) {
+        Item item = itemMapper.getById(itemId);
+        if (item == null) {
+            throw new ItemBusinessException(MessageConstant.ITEM_NOT_FOUND);
+        }
+        if (!item.getSellerId().equals(BaseContext.getCurrentId())) {
+            throw new ItemBusinessException("只能修改自己的商品");
+        }
+        BeanUtils.copyProperties(itemDTO, item);
+        item.setItemId(itemId);
+        itemMapper.update(item);
+    }
+
+    @Override
+    public void delete(Long itemId) {
+        Item item = itemMapper.getById(itemId);
+        if (item == null) {
+            throw new ItemBusinessException(MessageConstant.ITEM_NOT_FOUND);
+        }
+        if (!item.getSellerId().equals(BaseContext.getCurrentId())) {
+            throw new ItemBusinessException("只能下架自己的商品");
+        }
+        item.setStatus(0);
+        itemMapper.update(item);
+    }
+
+    @Override
+    public void relist(Long itemId) {
+        Item item = itemMapper.getById(itemId);
+        if (item == null) {
+            throw new ItemBusinessException(MessageConstant.ITEM_NOT_FOUND);
+        }
+        if (!item.getSellerId().equals(BaseContext.getCurrentId())) {
+            throw new ItemBusinessException("只能上架自己的商品");
+        }
+        if (item.getStatus() != 0) {
+            throw new ItemBusinessException("该商品不是下架状态，无需上架");
+        }
+        item.setStatus(1);
+        itemMapper.update(item);
+    }
+
+    @Override
+    public PageResult pageQuery(ItemPageQueryDTO dto) {
+        PageHelper.startPage(dto.getPage(), dto.getPageSize());
+        List<ItemVO> list = itemMapper.pageQuery(dto);
+        Page<ItemVO> page = (Page<ItemVO>) list;
+        return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    @Override
+    public ItemDetailVO getById(Long itemId) {
+        ItemDetailVO detail = itemMapper.getDetailById(itemId);
+        if (detail == null) {
+            throw new ItemBusinessException(MessageConstant.ITEM_NOT_FOUND);
+        }
+        return detail;
+    }
+
+    @Override
+    public List<ItemVO> getByUserId(Long userId) {
+        return itemMapper.getByUserId(userId);
+    }
+}

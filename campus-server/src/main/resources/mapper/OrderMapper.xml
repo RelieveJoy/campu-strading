@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.mapper.OrderMapper">
+
+    <update id="update" parameterType="Orders">
+        update orders
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+        </set>
+        where order_id = #{orderId}
+    </update>
+
+    <select id="pageQuery" resultType="com.campus.vo.OrderVO">
+        select o.order_id, o.item_id, o.amount, o.status, o.create_time,
+               o.buyer_id, o.seller_id,
+               i.title as item_title, i.image_url as item_image_url,
+               b.username as buyer_name, s.username as seller_name
+        from orders o
+        left join item i on o.item_id = i.item_id
+        left join user b on o.buyer_id = b.user_id
+        left join user s on o.seller_id = s.user_id
+        <where>
+            <if test="buyerId != null">and o.buyer_id = #{buyerId}</if>
+            <if test="sellerId != null">and o.seller_id = #{sellerId}</if>
+            <if test="status != null">and o.status = #{status}</if>
+        </where>
+        order by o.create_time desc
+    </select>
+
+    <select id="getDetailById" resultType="com.campus.vo.OrderVO">
+        select o.order_id, o.item_id, o.amount, o.status, o.create_time,
+               o.buyer_id, o.seller_id,
+               i.title as item_title, i.image_url as item_image_url,
+               b.username as buyer_name, s.username as seller_name
+        from orders o
+        left join item i on o.item_id = i.item_id
+        left join user b on o.buyer_id = b.user_id
+        left join user s on o.seller_id = s.user_id
+        where o.order_id = #{orderId}
+    </select>
+
+</mapper>

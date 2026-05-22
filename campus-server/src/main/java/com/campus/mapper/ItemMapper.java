@@ -1,0 +1,39 @@
+package com.campus.mapper;
+
+import com.campus.annotation.AutoFill;
+import com.campus.dto.ItemPageQueryDTO;
+import com.campus.entity.Item;
+import com.campus.enumeration.OperationType;
+import com.campus.vo.ItemDetailVO;
+import com.campus.vo.ItemVO;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
+
+@Mapper
+public interface ItemMapper {
+
+    @Insert("insert into item(seller_id, title, description, price, original_price, category_id, status, image_url, view_count, create_time, update_time, create_user, update_user) " +
+            "values " +
+            "(#{sellerId}, #{title}, #{description}, #{price}, #{originalPrice}, #{categoryId}, #{status}, #{imageUrl}, #{viewCount}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+    @AutoFill(OperationType.INSERT)
+    void insert(Item item);
+
+    @AutoFill(OperationType.UPDATE)
+    void update(Item item);
+
+    List<ItemVO> pageQuery(ItemPageQueryDTO dto);
+
+    @Select("select * from item where item_id = #{itemId}")
+    Item getById(Long itemId);
+
+    ItemDetailVO getDetailById(Long itemId);
+
+    List<ItemVO> getByUserId(Long userId);
+
+    @Update("update item set view_count = #{count} where item_id = #{itemId}")
+    void updateViewCount(Long itemId, Integer count);
+}
