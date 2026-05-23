@@ -12,22 +12,24 @@
     </select>
 
     <select id="countByPriceRange" resultType="com.campus.vo.OrderStatisticsVO">
-        select
-            case
-                when price between 0 and 50 then '0-50'
-                when price between 50 and 100 then '50-100'
-                when price between 100 and 200 then '100-200'
-                else '200以上'
-            end as name,
-            count(*) as value
-        from item
-        where status != 0
-        group by name
+        select t.range_name as name, count(*) as value
+        from (
+            select
+                case
+                    when price between 0 and 50 then '0-50'
+                    when price between 50 and 100 then '50-100'
+                    when price between 100 and 200 then '100-200'
+                    else '200以上'
+                end as range_name
+            from item
+            where status != 0
+        ) t
+        group by t.range_name
         order by
-            case
-                when price between 0 and 50 then 1
-                when price between 50 and 100 then 2
-                when price between 100 and 200 then 3
+            case t.range_name
+                when '0-50' then 1
+                when '50-100' then 2
+                when '100-200' then 3
                 else 4
             end
     </select>

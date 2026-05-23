@@ -46,14 +46,23 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         //1、从请求头中获取令牌
         String token = request.getHeader(jwtProperties.getUserTokenName());
 
-        //2、检查令牌是否在黑名单中（已登出）
-        Boolean isBlacklisted = redisTemplate.hasKey("blacklist:token:" + token);
-        if (Boolean.TRUE.equals(isBlacklisted)) {
-            response.setStatus(401);
-            return false;
+        //2、没有令牌则直接放行（未登录游客可访问公开页面）
+        if (token == null || token.isEmpty()) {
+            return true;
         }
 
-        //3、校验令牌
+        //3、检查令牌是否在黑名单中（已登出），Redis不可用时跳过
+        try {
+            Boolean isBlacklisted = redisTemplate.hasKey("blacklist:token:" + token);
+            if (Boolean.TRUE.equals(isBlacklisted)) {
+                response.setStatus(401);
+                return false;
+            }
+        } catch (Exception e) {
+            log.warn("Redis不可用，跳过黑名单检查");
+        }
+
+        //4、校验令牌
         try {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
