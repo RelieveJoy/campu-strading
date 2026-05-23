@@ -1,7 +1,6 @@
 <template>
   <div class="publish-container">
     <div class="publish-header">
-      <el-button @click="$router.back()">← 返回</el-button>
       <h2>{{ isEdit ? '编辑商品' : '发布商品' }}</h2>
     </div>
     <el-form :model="form" :rules="rules" ref="formRef" label-width="80px" class="publish-form">

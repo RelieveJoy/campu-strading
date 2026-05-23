@@ -1,7 +1,6 @@
 <template>
   <div class="profile-container">
     <div class="profile-header">
-      <el-button @click="$router.push('/')">← 返回首页</el-button>
       <h2>个人中心</h2>
     </div>
 

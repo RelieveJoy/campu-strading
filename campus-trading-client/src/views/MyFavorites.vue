@@ -1,7 +1,6 @@
 <template>
   <div class="favorites-container">
     <div class="header">
-      <el-button @click="$router.push('/')">← 返回首页</el-button>
       <h2>我的收藏</h2>
     </div>
     <div class="fav-grid" v-if="favorites.length > 0">
