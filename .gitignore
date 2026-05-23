@@ -21,3 +21,9 @@ Thumbs.db
 
 # Maven
 dependency-reduced-pom.xml
+
+# Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
