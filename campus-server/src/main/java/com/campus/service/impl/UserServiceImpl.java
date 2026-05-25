@@ -15,14 +15,17 @@ import com.campus.mapper.UserMapper;
 import com.campus.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 用户登录
@@ -43,11 +46,8 @@ public class UserServiceImpl implements UserService {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        //密码比对
-        //对前端传过来的密码进行md5加密处理
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
-
-        if (!password.equals(user.getPassword())) {
+        //密码比对（BCrypt）
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         BeanUtils.copyProperties(userRegisterDTO, user);
         user.setStatus(StatusConstant.ENABLE);
-        user.setPassword(DigestUtils.md5DigestAsHex(userRegisterDTO.getPassword().getBytes()));
+        user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
 
         userMapper.insert(user);
     }
@@ -108,12 +108,11 @@ public class UserServiceImpl implements UserService {
     public void editPassword(PasswordEditDTO passwordEditDTO) {
         Long userId = BaseContext.getCurrentId();
         User user = userMapper.getById(userId);
-        String oldPassword = DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes());
-        if (!oldPassword.equals(user.getPassword())) {
+        if (!passwordEncoder.matches(passwordEditDTO.getOldPassword(), user.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
-        user.setPassword(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()));
+        user.setPassword(passwordEncoder.encode(passwordEditDTO.getNewPassword()));
         userMapper.update(user);
     }
 
