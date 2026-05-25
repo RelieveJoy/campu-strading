@@ -5,7 +5,7 @@ campus:
     port: 3306
     database: campus_trading
     username: root
-    password: root123
+    password: ${MYSQL_DB_PASSWORD}
   redis:
     host: redis
     port: 6379
@@ -15,7 +15,7 @@ campus:
     endpoint: ${OSS_ENDPOINT:oss-cn-beijing.aliyuncs.com}
     access-key-id: ${OSS_ACCESS_KEY_ID:}
     access-key-secret: ${OSS_ACCESS_KEY_SECRET:}
-    bucket-name: ${OSS_BUCKET_NAME:sky-relievejoy}
+    bucket-name: ${OSS_BUCKET_NAME}
   wechat:
     appid: ${WECHAT_APPID:}
     secret: ${WECHAT_SECRET:}
