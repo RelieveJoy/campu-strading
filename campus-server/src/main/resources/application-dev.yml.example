@@ -5,17 +5,29 @@ campus:
     port: 3306
     database: campus_trading
     username: root
-    password: 你的数据库密码
-  alioss:
-    endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: 你的AccessKey
-    access-key-secret: 你的AccessKeySecret
-    bucket-name: 你的Bucket名称
+    password: your_db_password
   redis:
     host: localhost
     port: 6379
-    password: 你的Redis密码
+    password: your_redis_password
     database: 10
+  alioss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: your_oss_access_key_id
+    access-key-secret: your_oss_access_key_secret
+    bucket-name: your_oss_bucket_name
   wechat:
-    appid: 你的小程序AppID
-    secret: 你的小程序Secret
+    appid: your_wechat_appid
+    secret: your_wechat_secret
+
+# ============================================
+# JWT 密钥通过环境变量注入，启动前请设置：
+# ============================================
+#   export JWT_ADMIN_SECRET_KEY=your_admin_secret
+#   export JWT_USER_SECRET_KEY=your_user_secret
+#
+# 可选环境变量（有默认值，可不设置）：
+#   JWT_ADMIN_TTL=72000000000          # 管理端 Token 过期时间(ms)
+#   JWT_USER_TTL=72000000000           # 用户端 Token 过期时间(ms)
+#   JWT_ADMIN_TOKEN_NAME=token         # 管理端 Token 请求头名称
+#   JWT_USER_TOKEN_NAME=authentication # 用户端 Token 请求头名称

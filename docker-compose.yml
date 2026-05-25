@@ -33,6 +33,14 @@ services:
     container_name: campus-backend
     ports:
       - "8080:8080"
+    environment:
+      MYSQL_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      JWT_ADMIN_SECRET_KEY: ${JWT_ADMIN_SECRET_KEY}
+      JWT_USER_SECRET_KEY: ${JWT_USER_SECRET_KEY}
+      JWT_ADMIN_TTL: ${JWT_ADMIN_TTL:-72000000000}
+      JWT_USER_TTL: ${JWT_USER_TTL:-72000000000}
+      JWT_ADMIN_TOKEN_NAME: ${JWT_ADMIN_TOKEN_NAME:-token}
+      JWT_USER_TOKEN_NAME: ${JWT_USER_TOKEN_NAME:-authentication}
     depends_on:
       mysql:
         condition: service_healthy
