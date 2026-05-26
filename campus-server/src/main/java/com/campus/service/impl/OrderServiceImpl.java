@@ -36,11 +36,14 @@ public class OrderServiceImpl implements OrderService {
         if (item == null) {
             throw new OrderBusinessException(MessageConstant.ITEM_NOT_FOUND);
         }
-        if (item.getStatus() != 1) {
-            throw new OrderBusinessException("该商品已不在售");
-        }
         if (item.getSellerId().equals(buyerId)) {
             throw new OrderBusinessException("不能购买自己的商品");
+        }
+
+        // CAS: 原子更新商品状态为已售出，防止并发下一物多卖
+        int rows = itemMapper.updateStatusToSold(item.getItemId());
+        if (rows == 0) {
+            throw new OrderBusinessException("该商品已被其他用户购买");
         }
 
         Orders order = Orders.builder()
@@ -51,9 +54,6 @@ public class OrderServiceImpl implements OrderService {
                 .status(Orders.TO_BE_CONFIRMED)
                 .build();
         orderMapper.insert(order);
-
-        item.setStatus(2);
-        itemMapper.update(item);
     }
 
     @Override

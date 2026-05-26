@@ -36,4 +36,11 @@ public interface ItemMapper {
 
     @Update("update item set view_count = #{count} where item_id = #{itemId}")
     void updateViewCount(Long itemId, Integer count);
+
+    /**
+     * 原子更新商品状态为已售出（CAS：仅当 status=1 时更新）。
+     * @return 受影响行数，0 表示已被其他事务抢先修改
+     */
+    @Update("update item set status = 2 where item_id = #{itemId} and status = 1")
+    int updateStatusToSold(Long itemId);
 }
