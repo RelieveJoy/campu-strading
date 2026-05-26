@@ -9,6 +9,7 @@ import com.campus.dto.PasswordEditDTO;
 import com.campus.entity.User;
 import com.campus.exception.AccountLockedException;
 import com.campus.exception.AccountNotFoundException;
+import com.campus.exception.StudentIdAlreadyExistsException;
 import com.campus.exception.PasswordErrorException;
 import com.campus.exception.PasswordEditFailedException;
 import com.campus.mapper.UserMapper;
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
         //检查学号是否已存在
         User existUser = userMapper.getByStudentId(userRegisterDTO.getStudentId());
         if (existUser != null) {
-            throw new AccountNotFoundException("该学号已注册");
+            throw new StudentIdAlreadyExistsException(MessageConstant.STUDENT_ID_ALREADY_EXISTS);
         }
 
         User user = new User();
