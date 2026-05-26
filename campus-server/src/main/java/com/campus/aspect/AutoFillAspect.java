@@ -61,7 +61,8 @@ public class AutoFillAspect {
                 setCreateUser.invoke(arg, currentId);
                 setUpdateUser.invoke(arg, currentId);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("自动填充公共字段失败(INSERT): {}", e.getMessage(), e);
+                throw new RuntimeException(e);
             }
         }else if(value == OperationType.UPDATE){
             try {
@@ -71,7 +72,8 @@ public class AutoFillAspect {
                 setUpdateTime.invoke(arg, now1);
                 setUpdateUser.invoke(arg, currentId);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("自动填充公共字段失败(UPDATE): {}", e.getMessage(), e);
+                throw new RuntimeException(e);
             }
         }
     }
