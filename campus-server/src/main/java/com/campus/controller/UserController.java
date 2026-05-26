@@ -4,9 +4,10 @@ import com.campus.constant.JwtClaimsConstant;
 import com.campus.constant.MessageConstant;
 import com.campus.context.BaseContext;
 import com.campus.dto.UserLoginDTO;
-import com.campus.exception.BaseException;
 import com.campus.dto.UserRegisterDTO;
+import com.campus.dto.UserUpdateDTO;
 import com.campus.dto.PasswordEditDTO;
+import com.campus.exception.BaseException;
 import com.campus.entity.User;
 import com.campus.properties.JwtProperties;
 import com.campus.result.Result;
@@ -19,6 +20,7 @@ import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -114,11 +116,13 @@ public class UserController {
      */
     @ApiOperation("修改用户信息")
     @PutMapping("/{id}")
-    public Result update(@PathVariable Long id, @RequestBody User user) {
+    public Result update(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
         if (!id.equals(BaseContext.getCurrentId())) {
             throw new BaseException(MessageConstant.PERMISSION_DENIED);
         }
-        log.info("修改用户信息：{}", user);
+        log.info("修改用户信息：{}", userUpdateDTO);
+        User user = new User();
+        BeanUtils.copyProperties(userUpdateDTO, user);
         user.setUserId(id);
         userService.update(user);
         return Result.success();
