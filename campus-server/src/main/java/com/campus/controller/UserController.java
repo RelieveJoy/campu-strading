@@ -157,11 +157,19 @@ public class UserController {
     @PostMapping("/logout")
     public Result<String> logout(HttpServletRequest request) {
         String token = request.getHeader(jwtProperties.getUserTokenName());
+        String blacklistKey = "blacklist:token:" + token;
+
+        // 幂等：Token 已在黑名单中，直接返回成功
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(blacklistKey))) {
+            log.info("用户重复登出，token已在黑名单");
+            return Result.success();
+        }
+
         Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
         long remainingTtl = claims.getExpiration().getTime() - System.currentTimeMillis();
         if (remainingTtl > 0) {
             redisTemplate.opsForValue()
-                    .set("blacklist:token:" + token, "1", remainingTtl, TimeUnit.MILLISECONDS);
+                    .set(blacklistKey, "1", remainingTtl, TimeUnit.MILLISECONDS);
         }
         BaseContext.removeCurrentId();
         log.info("用户已登出，token加入黑名单");
