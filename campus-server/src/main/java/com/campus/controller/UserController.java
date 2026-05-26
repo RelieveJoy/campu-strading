@@ -1,8 +1,10 @@
 package com.campus.controller;
 
 import com.campus.constant.JwtClaimsConstant;
+import com.campus.constant.MessageConstant;
 import com.campus.context.BaseContext;
 import com.campus.dto.UserLoginDTO;
+import com.campus.exception.BaseException;
 import com.campus.dto.UserRegisterDTO;
 import com.campus.dto.PasswordEditDTO;
 import com.campus.entity.User;
@@ -113,6 +115,9 @@ public class UserController {
     @ApiOperation("修改用户信息")
     @PutMapping("/{id}")
     public Result update(@PathVariable Long id, @RequestBody User user) {
+        if (!id.equals(BaseContext.getCurrentId())) {
+            throw new BaseException(MessageConstant.PERMISSION_DENIED);
+        }
         log.info("修改用户信息：{}", user);
         user.setUserId(id);
         userService.update(user);

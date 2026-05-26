@@ -17,5 +17,6 @@ public class MessageConstant {
     public static final String ITEM_NOT_FOUND = "商品不存在";
     public static final String ORDER_NOT_FOUND = "订单不存在";
     public static final String ORDER_STATUS_ERROR = "订单状态错误";
+    public static final String PERMISSION_DENIED = "无权操作";
 
 }
