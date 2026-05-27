@@ -25,10 +25,9 @@ public class ViewCountSyncTask {
         if (keys != null && !keys.isEmpty()) {
             for (String key : keys) {
                 Long itemId = Long.valueOf(key.replace("view_count:", ""));
-                Integer count = (Integer) redisTemplate.opsForValue().get(key);
+                Integer count = (Integer) redisTemplate.opsForValue().getAndSet(key, 0);
                 if (count != null && count > 0) {
                     itemMapper.updateViewCount(itemId, count);
-                    redisTemplate.delete(key);
                     log.info("同步商品[{}]浏览量: {}", itemId, count);
                 }
             }
