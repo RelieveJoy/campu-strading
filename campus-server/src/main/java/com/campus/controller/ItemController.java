@@ -11,7 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
     @Autowired
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     @ApiOperation("发布商品")
     @PostMapping
@@ -79,7 +79,7 @@ public class ItemController {
     @GetMapping("/{id}")
     public Result<ItemDetailVO> getById(@PathVariable Long id) {
         log.info("查询商品详情 id={}", id);
-        redisTemplate.opsForValue().increment("view_count:" + id);
+        stringRedisTemplate.opsForValue().increment("view_count:" + id);
         ItemDetailVO detail = itemService.getById(id);
         return Result.success(detail);
     }
