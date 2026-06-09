@@ -3,8 +3,8 @@ package com.campus.controller;
 import com.campus.constant.MessageConstant;
 import com.campus.result.Result;
 import com.campus.utils.AliOssUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,13 +19,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/common")
 @Slf4j
-@Api(tags = "通用接口")
+@Tag(name = "通用接口")
 public class CommonController {
 
     @Autowired
     private AliOssUtil aliOssUtil;
 
-    @ApiOperation("文件上传")
+    @Operation(summary = "文件上传")
     @PostMapping("/upload")
     public Result<String> upload(@RequestParam("file") MultipartFile file) {
         log.info("文件上传：{}", file.getOriginalFilename());

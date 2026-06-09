@@ -17,15 +17,15 @@ import com.campus.utils.JwtUtil;
 import com.campus.vo.ItemVO;
 import com.campus.vo.UserLoginVO;
 import io.jsonwebtoken.Claims;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/api/users")
 @Slf4j
-@Api(tags = "用户相关接口")
+@Tag(name = "用户相关接口")
 public class UserController {
 
     @Autowired
@@ -55,7 +55,7 @@ public class UserController {
      * @param userLoginDTO
      * @return
      */
-    @ApiOperation("用户登录")
+    @Operation(summary = "用户登录")
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
         log.info("用户登录：{}", userLoginDTO);
@@ -88,7 +88,7 @@ public class UserController {
      * @param userRegisterDTO
      * @return
      */
-    @ApiOperation("用户注册")
+    @Operation(summary = "用户注册")
     @PostMapping("/register")
     public Result<String> register(@RequestBody UserRegisterDTO userRegisterDTO) {
         log.info("用户注册：{}", userRegisterDTO);
@@ -102,7 +102,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/{id}")
-    @ApiOperation("根据id查询用户信息")
+    @Operation(summary = "根据id查询用户信息")
     public Result<User> getById(@PathVariable Long id) {
         User user = userService.getById(id);
         return Result.success(user);
@@ -114,7 +114,7 @@ public class UserController {
      * @param user
      * @return
      */
-    @ApiOperation("修改用户信息")
+    @Operation(summary = "修改用户信息")
     @PutMapping("/{id}")
     public Result update(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
         if (!id.equals(BaseContext.getCurrentId())) {
@@ -133,7 +133,7 @@ public class UserController {
      * @param passwordEditDTO
      * @return
      */
-    @ApiOperation("修改密码")
+    @Operation(summary = "修改密码")
     @PutMapping("/password")
     public Result editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
         userService.editPassword(passwordEditDTO);
@@ -145,7 +145,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @ApiOperation("查看用户发布的商品")
+    @Operation(summary = "查看用户发布的商品")
     @GetMapping("/{id}/items")
     public Result<List<ItemVO>> getUserItems(@PathVariable Long id) {
         log.info("查询用户 {} 发布的商品", id);
@@ -153,7 +153,7 @@ public class UserController {
         return Result.success(items);
     }
 
-    @ApiOperation("用户登出")
+    @Operation(summary = "用户登出")
     @PostMapping("/logout")
     public Result<String> logout(HttpServletRequest request) {
         String token = request.getHeader(jwtProperties.getUserTokenName());

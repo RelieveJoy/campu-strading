@@ -1,21 +1,20 @@
 package com.campus.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-@ApiModel(description = "用户修改个人信息时传递的数据模型")
+@Schema(description = "用户修改个人信息时传递的数据模型")
 public class UserUpdateDTO implements Serializable {
 
-    @ApiModelProperty("昵称")
+    @Schema(description = "昵称")
     private String username;
 
-    @ApiModelProperty("手机号")
+    @Schema(description = "手机号")
     private String phone;
 
-    @ApiModelProperty("头像URL")
+    @Schema(description = "头像URL")
     private String avatar;
 }

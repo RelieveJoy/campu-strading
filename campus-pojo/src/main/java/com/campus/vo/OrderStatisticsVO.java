@@ -1,7 +1,6 @@
 package com.campus.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +12,13 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "数据统计返回")
+@Schema(description = "数据统计返回")
 public class OrderStatisticsVO implements Serializable {
 
-    @ApiModelProperty("名称（分类名/日期等）")
+    @Schema(description = "名称（分类名/日期等）")
     private String name;
 
-    @ApiModelProperty("数量")
+    @Schema(description = "数量")
     private Long value;
 
 }

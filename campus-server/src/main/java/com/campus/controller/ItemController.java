@@ -7,8 +7,8 @@ import com.campus.result.Result;
 import com.campus.service.ItemService;
 import com.campus.vo.ItemDetailVO;
 import com.campus.vo.ItemVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/items")
 @Slf4j
-@Api(tags = "商品相关接口")
+@Tag(name = "商品相关接口")
 public class ItemController {
 
     @Autowired
@@ -27,7 +27,7 @@ public class ItemController {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    @ApiOperation("发布商品")
+    @Operation(summary = "发布商品")
     @PostMapping
     public Result<String> add(@RequestBody ItemDTO itemDTO) {
         log.info("发布商品：{}", itemDTO);
@@ -35,7 +35,7 @@ public class ItemController {
         return Result.success();
     }
 
-    @ApiOperation("编辑商品")
+    @Operation(summary = "编辑商品")
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable Long id, @RequestBody ItemDTO itemDTO) {
         log.info("编辑商品 id={}：{}", id, itemDTO);
@@ -43,7 +43,7 @@ public class ItemController {
         return Result.success();
     }
 
-    @ApiOperation("下架商品")
+    @Operation(summary = "下架商品")
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable Long id) {
         log.info("下架商品 id={}", id);
@@ -51,7 +51,7 @@ public class ItemController {
         return Result.success();
     }
 
-    @ApiOperation("重新上架商品")
+    @Operation(summary = "重新上架商品")
     @PutMapping("/{id}/relist")
     public Result<String> relist(@PathVariable Long id) {
         log.info("重新上架商品 id={}", id);
@@ -59,7 +59,7 @@ public class ItemController {
         return Result.success();
     }
 
-    @ApiOperation("分页查询商品")
+    @Operation(summary = "分页查询商品")
     @GetMapping
     public Result<PageResult> pageQuery(ItemPageQueryDTO dto) {
         log.info("分页查询商品：{}", dto);
@@ -67,7 +67,7 @@ public class ItemController {
         return Result.success(pageResult);
     }
 
-    @ApiOperation("首页商品列表（缓存）")
+    @Operation(summary = "首页商品列表（缓存）")
     @GetMapping("/home")
     public Result<List<ItemVO>> homeItems() {
         log.info("查询首页商品");
@@ -75,7 +75,7 @@ public class ItemController {
         return Result.success(list);
     }
 
-    @ApiOperation("商品详情")
+    @Operation(summary = "商品详情")
     @GetMapping("/{id}")
     public Result<ItemDetailVO> getById(@PathVariable Long id) {
         log.info("查询商品详情 id={}", id);

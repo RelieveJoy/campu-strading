@@ -1,7 +1,6 @@
 package com.campus.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,48 +14,48 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "商品详情（含卖家信息）")
+@Schema(description = "商品详情（含卖家信息）")
 public class ItemDetailVO implements Serializable {
 
-    @ApiModelProperty("商品ID")
+    @Schema(description = "商品ID")
     private Long itemId;
 
-    @ApiModelProperty("商品标题")
+    @Schema(description = "商品标题")
     private String title;
 
-    @ApiModelProperty("商品描述")
+    @Schema(description = "商品描述")
     private String description;
 
-    @ApiModelProperty("售价")
+    @Schema(description = "售价")
     private BigDecimal price;
 
-    @ApiModelProperty("原价")
+    @Schema(description = "原价")
     private BigDecimal originalPrice;
 
-    @ApiModelProperty("分类ID")
+    @Schema(description = "分类ID")
     private Long categoryId;
 
-    @ApiModelProperty("分类名称")
+    @Schema(description = "分类名称")
     private String categoryName;
 
-    @ApiModelProperty("商品图片URL")
+    @Schema(description = "商品图片URL")
     private String imageUrl;
 
-    @ApiModelProperty("浏览量")
+    @Schema(description = "浏览量")
     private Integer viewCount;
 
-    @ApiModelProperty("状态：1在售 0下架 2已售出")
+    @Schema(description = "状态：1在售 0下架 2已售出")
     private Integer status;
 
-    @ApiModelProperty("卖家ID")
+    @Schema(description = "卖家ID")
     private Long sellerId;
 
-    @ApiModelProperty("卖家姓名")
+    @Schema(description = "卖家姓名")
     private String sellerName;
 
-    @ApiModelProperty("卖家手机号")
+    @Schema(description = "卖家手机号")
     private String sellerPhone;
 
-    @ApiModelProperty("发布时间")
+    @Schema(description = "发布时间")
     private LocalDateTime createTime;
 }

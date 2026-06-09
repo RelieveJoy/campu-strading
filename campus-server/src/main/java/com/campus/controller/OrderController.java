@@ -6,8 +6,8 @@ import com.campus.result.PageResult;
 import com.campus.result.Result;
 import com.campus.service.OrderService;
 import com.campus.vo.OrderVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/orders")
 @Slf4j
-@Api(tags = "订单相关接口")
+@Tag(name = "订单相关接口")
 public class OrderController {
 
     @Autowired
     private OrderService orderService;
 
-    @ApiOperation("创建订单")
+    @Operation(summary = "创建订单")
     @PostMapping
     public Result<String> create(@RequestBody OrdersDTO ordersDTO) {
         log.info("创建订单：{}", ordersDTO);
@@ -29,7 +29,7 @@ public class OrderController {
         return Result.success();
     }
 
-    @ApiOperation("确认完成订单")
+    @Operation(summary = "确认完成订单")
     @PutMapping("/{id}/confirm")
     public Result<String> confirm(@PathVariable Long id) {
         log.info("确认完成订单 id={}", id);
@@ -37,7 +37,7 @@ public class OrderController {
         return Result.success();
     }
 
-    @ApiOperation("取消订单")
+    @Operation(summary = "取消订单")
     @PutMapping("/{id}/cancel")
     public Result<String> cancel(@PathVariable Long id) {
         log.info("取消订单 id={}", id);
@@ -45,7 +45,7 @@ public class OrderController {
         return Result.success();
     }
 
-    @ApiOperation("分页查询订单")
+    @Operation(summary = "分页查询订单")
     @GetMapping
     public Result<PageResult> pageQuery(OrdersPageQueryDTO dto) {
         log.info("分页查询订单：{}", dto);
@@ -53,7 +53,7 @@ public class OrderController {
         return Result.success(pageResult);
     }
 
-    @ApiOperation("订单详情")
+    @Operation(summary = "订单详情")
     @GetMapping("/{id}")
     public Result<OrderVO> getById(@PathVariable Long id) {
         log.info("查询订单详情 id={}", id);

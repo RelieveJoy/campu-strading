@@ -1,7 +1,6 @@
 package com.campus.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,27 +14,27 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "收藏列表项")
+@Schema(description = "收藏列表项")
 public class FavoriteVO implements Serializable {
 
-    @ApiModelProperty("收藏ID")
+    @Schema(description = "收藏ID")
     private Long favoriteId;
 
-    @ApiModelProperty("用户ID")
+    @Schema(description = "用户ID")
     private Long userId;
 
-    @ApiModelProperty("商品ID")
+    @Schema(description = "商品ID")
     private Long itemId;
 
-    @ApiModelProperty("商品标题")
+    @Schema(description = "商品标题")
     private String itemTitle;
 
-    @ApiModelProperty("商品图片URL")
+    @Schema(description = "商品图片URL")
     private String itemImageUrl;
 
-    @ApiModelProperty("商品价格")
+    @Schema(description = "商品价格")
     private BigDecimal itemPrice;
 
-    @ApiModelProperty("收藏时间")
+    @Schema(description = "收藏时间")
     private LocalDateTime createTime;
 }
