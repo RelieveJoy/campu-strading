@@ -3,10 +3,10 @@
 *.iml
 *.class
 
-# 敏感配置文件（含数据库密码、OSS密钥等）
-application-dev.yml
+# 敏感配置文件
 application-prod.yml
 *.env
+# application-dev.yml 已移除密钥，可以提交
 
 # 测试文件
 *Test.java

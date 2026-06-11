@@ -1,0 +1,21 @@
+campus:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: ${CAMPUS_DATASOURCE_HOST:localhost}
+    port: ${CAMPUS_DATASOURCE_PORT:3306}
+    database: ${CAMPUS_DATASOURCE_DATABASE:campus_trading}
+    username: ${CAMPUS_DATASOURCE_USERNAME:root}
+    password: ${CAMPUS_DATASOURCE_PASSWORD:123456}
+  alioss:
+    endpoint: ${CAMPUS_ALIOSS_ENDPOINT:oss-cn-beijing.aliyuncs.com}
+    access-key-id: ${CAMPUS_ALIOSS_ACCESS_KEY_ID}
+    access-key-secret: ${CAMPUS_ALIOSS_ACCESS_KEY_SECRET}
+    bucket-name: ${CAMPUS_ALIOSS_BUCKET_NAME:sky-relievejoy}
+  redis:
+    host: ${CAMPUS_REDIS_HOST:localhost}
+    port: ${CAMPUS_REDIS_PORT:6379}
+    password: ${CAMPUS_REDIS_PASSWORD:123456}
+    database: ${CAMPUS_REDIS_DATABASE:10}
+  wechat:
+    appid: ${CAMPUS_WECHAT_APPID}
+    secret: ${CAMPUS_WECHAT_SECRET}

@@ -45,13 +45,17 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * 扩展消息转换器
+     * 扩展消息转换器：直接替换默认转换器的 ObjectMapper，
+     * 避免新增转换器导致 Knife4j/SpringDoc 响应序列化异常。
      */
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("扩展消息转换器");
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setObjectMapper(new JacksonObjectMapper());
-        converters.add(0, converter);
+        for (HttpMessageConverter<?> c : converters) {
+            if (c instanceof MappingJackson2HttpMessageConverter jsonConverter) {
+                jsonConverter.setObjectMapper(new JacksonObjectMapper());
+                return;
+            }
+        }
     }
 }
