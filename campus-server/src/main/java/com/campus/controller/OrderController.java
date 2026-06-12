@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +24,7 @@ public class OrderController {
 
     @Operation(summary = "创建订单")
     @PostMapping
-    public Result<String> create(@RequestBody OrdersDTO ordersDTO) {
+    public Result<String> create(@RequestBody @Valid OrdersDTO ordersDTO) {
         log.info("创建订单：{}", ordersDTO);
         orderService.create(ordersDTO);
         return Result.success();

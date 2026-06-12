@@ -1,20 +1,30 @@
 <template>
-  <div class="stats-container">
-    <div class="header">
-      <h2>数据统计</h2>
+  <div class="stats-page">
+    <div class="page-header">
+      <h1>数据统计</h1>
+      <p class="page-subtitle">平台商品与交易数据概览</p>
     </div>
-    <div class="charts">
+
+    <div class="stats-grid">
+      <!-- Category Pie -->
       <div class="chart-card">
-        <h3>各分类商品数量</h3>
-        <div ref="categoryChart" style="width:100%;height:350px"></div>
+        <h3 class="chart-title">各分类商品数量</h3>
+        <div ref="categoryChart" class="chart-body"></div>
+        <div v-if="!hasCategoryData" class="chart-empty">暂无数据</div>
       </div>
+
+      <!-- Price Range Bar -->
       <div class="chart-card">
-        <h3>价格区间分布</h3>
-        <div ref="priceChart" style="width:100%;height:350px"></div>
+        <h3 class="chart-title">价格区间分布</h3>
+        <div ref="priceChart" class="chart-body"></div>
+        <div v-if="!hasPriceData" class="chart-empty">暂无数据</div>
       </div>
+
+      <!-- Trade Trend Line -->
       <div class="chart-card chart-wide">
-        <h3>近30天交易趋势</h3>
-        <div ref="tradeChart" style="width:100%;height:350px"></div>
+        <h3 class="chart-title">近30天交易趋势</h3>
+        <div ref="tradeChart" class="chart-body chart-tall"></div>
+        <div v-if="!hasTradeData" class="chart-empty">暂无交易数据</div>
       </div>
     </div>
   </div>
@@ -28,39 +38,139 @@ import { getCategoryStats, getPriceRangeStats, getTradeTrend } from '../api/stat
 const categoryChart = ref(null)
 const priceChart = ref(null)
 const tradeChart = ref(null)
+const hasCategoryData = ref(true)
+const hasPriceData = ref(true)
+const hasTradeData = ref(true)
 
-const initPie = async () => {
+// ── Brand-aligned ECharts colors ──
+// Coral primary → pie slices, bar fill
+// Sky accent → secondary data series
+const CORAL = 'oklch(0.50 0.16 28)'
+const CORAL_LIGHT = 'oklch(0.65 0.12 28)'
+const SKY = 'oklch(0.52 0.15 215)'
+const SKY_LIGHT = 'oklch(0.68 0.10 215)'
+const SUCCESS = 'oklch(0.52 0.16 145)'
+const WARNING = 'oklch(0.58 0.18 85)'
+const BRAND_COLORS = [
+  CORAL, SKY, SUCCESS, WARNING,
+  'oklch(0.48 0.14 340)', // rose
+  'oklch(0.50 0.14 80)',  // amber-green
+]
+const TEXT_COLOR = 'oklch(0.35 0.005 28)'
+const MUTED_COLOR = 'oklch(0.58 0.005 28)'
+const BORDER_COLOR = 'oklch(0.88 0.005 60)'
+
+const chartTheme = {
+  textStyle: { fontFamily: "'PingFang SC','Microsoft YaHei',system-ui,sans-serif" },
+}
+
+async function initPie() {
   const res = await getCategoryStats()
+  const data = res.data || []
+  if (!data.length) { hasCategoryData.value = false; return }
+
   const chart = echarts.init(categoryChart.value)
   chart.setOption({
-    tooltip: { trigger: 'item' },
+    ...chartTheme,
+    tooltip: { trigger: 'item', formatter: '{b}: {c} 件 ({d}%)' },
+    color: BRAND_COLORS,
     series: [{
-      type: 'pie', radius: ['40%', '70%'],
-      data: res.data.map(i => ({ name: i.name || '未分类', value: i.value })),
-      emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' } }
-    }]
+      type: 'pie',
+      radius: ['45%', '72%'],
+      center: ['50%', '50%'],
+      data: data.map((i) => ({ name: i.name || '未分类', value: i.value })),
+      emphasis: {
+        itemStyle: { shadowBlur: 8, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.1)' },
+      },
+      label: { color: TEXT_COLOR, fontSize: 12 },
+    }],
   })
 }
 
-const initBar = async () => {
+async function initBar() {
   const res = await getPriceRangeStats()
+  const data = res.data || []
+  if (!data.length) { hasPriceData.value = false; return }
+
   const chart = echarts.init(priceChart.value)
   chart.setOption({
+    ...chartTheme,
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: res.data.map(i => i.name) },
-    yAxis: { type: 'value', name: '商品数量' },
-    series: [{ type: 'bar', data: res.data.map(i => i.value), itemStyle: { color: '#409eff' } }]
+    grid: { left: '3%', right: '4%', bottom: '8%', top: '8%', containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: data.map((i) => i.name),
+      axisLine: { lineStyle: { color: BORDER_COLOR } },
+      axisTick: { show: false },
+      axisLabel: { color: MUTED_COLOR, fontSize: 11 },
+    },
+    yAxis: {
+      type: 'value',
+      name: '件数',
+      nameTextStyle: { color: MUTED_COLOR, fontSize: 11 },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: { lineStyle: { color: 'oklch(0.93 0.003 60)' } },
+      axisLabel: { color: MUTED_COLOR, fontSize: 11 },
+    },
+    series: [{
+      type: 'bar',
+      data: data.map((i) => i.value),
+      itemStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: CORAL },
+          { offset: 1, color: CORAL_LIGHT },
+        ]),
+        borderRadius: [6, 6, 0, 0],
+      },
+      barWidth: '50%',
+      emphasis: { itemStyle: { color: CORAL } },
+    }],
   })
 }
 
-const initLine = async () => {
+async function initLine() {
   const res = await getTradeTrend()
+  const data = res.data || []
+  if (!data.length) { hasTradeData.value = false; return }
+
   const chart = echarts.init(tradeChart.value)
   chart.setOption({
+    ...chartTheme,
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: res.data.map(i => i.name), axisLabel: { rotate: 45 } },
-    yAxis: { type: 'value', name: '订单数' },
-    series: [{ type: 'line', data: res.data.map(i => i.value), smooth: true, itemStyle: { color: '#67c23a' } }]
+    grid: { left: '3%', right: '4%', bottom: '10%', top: '8%', containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: data.map((i) => i.name),
+      axisLine: { lineStyle: { color: BORDER_COLOR } },
+      axisTick: { show: false },
+      axisLabel: { color: MUTED_COLOR, fontSize: 11, rotate: 45 },
+      boundaryGap: false,
+    },
+    yAxis: {
+      type: 'value',
+      name: '订单数',
+      nameTextStyle: { color: MUTED_COLOR, fontSize: 11 },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: { lineStyle: { color: 'oklch(0.93 0.003 60)' } },
+      axisLabel: { color: MUTED_COLOR, fontSize: 11 },
+    },
+    series: [{
+      type: 'line',
+      data: data.map((i) => i.value),
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 6,
+      lineStyle: { color: SKY, width: 2.5 },
+      itemStyle: { color: SKY },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'oklch(0.52 0.15 215 / 0.18)' },
+          { offset: 1, color: 'oklch(0.52 0.15 215 / 0.02)' },
+        ]),
+      },
+    }],
   })
 }
 
@@ -73,11 +183,46 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.stats-container { max-width:1200px; margin:0 auto; padding:20px; }
-.header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
-.header h2 { margin:0; }
-.charts { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-.chart-wide { grid-column:1 / -1; }
-.chart-card { background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-.chart-card h3 { margin-bottom:16px; font-size:16px; color:#333; }
+.stats-page { max-width: 1100px; margin: 0 auto; }
+
+.page-header { margin-bottom: var(--space-lg); }
+.page-header h1 { font-size: var(--font-display-size); font-weight: var(--font-display-weight); color: var(--color-ink); margin-bottom: var(--space-xs); }
+.page-subtitle { font-size: var(--font-body-size); color: var(--color-muted); }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+.chart-wide { grid-column: 1 / -1; }
+
+.chart-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  position: relative;
+}
+.chart-title {
+  font-size: var(--font-title-size);
+  font-weight: var(--font-title-weight);
+  color: var(--color-ink);
+  margin-bottom: var(--space-md);
+}
+.chart-body { width: 100%; height: 320px; }
+.chart-tall { height: 360px; }
+
+.chart-empty {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color-muted);
+  font-size: var(--font-body-size);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .chart-wide { grid-column: auto; }
+}
 </style>

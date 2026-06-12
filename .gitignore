@@ -6,7 +6,7 @@
 # 敏感配置文件
 application-prod.yml
 *.env
-# application-dev.yml 已移除密钥，可以提交
+# application-dev.yml 和 .env.example 是模板，可以提交
 
 # 测试文件
 *Test.java
@@ -27,3 +27,22 @@ node_modules/
 dist/
 dist-ssr/
 *.local
+
+# AI 助手本地配置
+.claude/
+.codex/
+.cursor/
+
+# 设计工具本地配置
+.impeccable/
+
+# 设计文档（工具生成的中间产物）
+PLAN.md
+DESIGN.md
+PRODUCT.md
+
+# IDE（补充）
+.vscode/
+*.swp
+*.swo
+*~

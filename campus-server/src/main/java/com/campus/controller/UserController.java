@@ -26,6 +26,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class UserController {
      */
     @Operation(summary = "用户登录")
     @PostMapping("/login")
-    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
+    public Result<UserLoginVO> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
         log.info("用户登录：{}", userLoginDTO);
 
         User user = userService.login(userLoginDTO);
@@ -90,7 +91,7 @@ public class UserController {
      */
     @Operation(summary = "用户注册")
     @PostMapping("/register")
-    public Result<String> register(@RequestBody UserRegisterDTO userRegisterDTO) {
+    public Result<String> register(@RequestBody @Valid UserRegisterDTO userRegisterDTO) {
         log.info("用户注册：{}", userRegisterDTO);
         userService.register(userRegisterDTO);
         return Result.success();
@@ -116,7 +117,7 @@ public class UserController {
      */
     @Operation(summary = "修改用户信息")
     @PutMapping("/{id}")
-    public Result update(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
+    public Result update(@PathVariable Long id, @RequestBody @Valid UserUpdateDTO userUpdateDTO) {
         if (!id.equals(BaseContext.getCurrentId())) {
             throw new BaseException(MessageConstant.PERMISSION_DENIED);
         }
@@ -135,7 +136,7 @@ public class UserController {
      */
     @Operation(summary = "修改密码")
     @PutMapping("/password")
-    public Result editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
+    public Result editPassword(@RequestBody @Valid PasswordEditDTO passwordEditDTO) {
         userService.editPassword(passwordEditDTO);
         return Result.success();
     }

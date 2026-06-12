@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class FavoriteController {
 
     @Operation(summary = "收藏商品")
     @PostMapping
-    public Result<String> add(@RequestBody FavoriteDTO favoriteDTO) {
+    public Result<String> add(@RequestBody @Valid FavoriteDTO favoriteDTO) {
         log.info("收藏商品：{}", favoriteDTO);
         favoriteService.add(favoriteDTO);
         return Result.success();

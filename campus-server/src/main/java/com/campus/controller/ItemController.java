@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class ItemController {
 
     @Operation(summary = "发布商品")
     @PostMapping
-    public Result<String> add(@RequestBody ItemDTO itemDTO) {
+    public Result<String> add(@RequestBody @Valid ItemDTO itemDTO) {
         log.info("发布商品：{}", itemDTO);
         itemService.add(itemDTO);
         return Result.success();
@@ -37,7 +38,7 @@ public class ItemController {
 
     @Operation(summary = "编辑商品")
     @PutMapping("/{id}")
-    public Result<String> update(@PathVariable Long id, @RequestBody ItemDTO itemDTO) {
+    public Result<String> update(@PathVariable Long id, @RequestBody @Valid ItemDTO itemDTO) {
         log.info("编辑商品 id={}：{}", id, itemDTO);
         itemService.update(id, itemDTO);
         return Result.success();

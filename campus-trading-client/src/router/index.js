@@ -3,6 +3,11 @@ import LayoutView from '../views/LayoutView.vue'
 
 const routes = [
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/LoginView.vue'),
+  },
+  {
     path: '/',
     component: LayoutView,
     children: [
@@ -14,14 +19,14 @@ const routes = [
       { path: 'my-items', name: 'MyItems', component: () => import('../views/MyItems.vue') },
       { path: 'my-favorites', name: 'MyFavorites', component: () => import('../views/MyFavorites.vue') },
       { path: 'orders', name: 'MyOrders', component: () => import('../views/MyOrders.vue') },
-      { path: 'stats', name: 'Stats', component: () => import('../views/StatsView.vue') }
-    ]
-  }
+      { path: 'stats', name: 'Stats', component: () => import('../views/StatsView.vue') },
+    ],
+  },
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 })
 
 export default router

@@ -4,10 +4,12 @@ import com.campus.constant.MessageConstant;
 import com.campus.exception.BaseException;
 import com.campus.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.stream.Collectors;
 
 /**
  * 全局异常处理器，处理项目中抛出的业务异常
@@ -32,6 +34,18 @@ public class GlobalExceptionHandler {
     public Result exceptionHandler(SQLIntegrityConstraintViolationException ex) {
         log.error("数据完整性约束冲突", ex);
         return Result.error(MessageConstant.OPERATION_FAILED);
+    }
+
+    /**
+     * 捕获 @Valid 参数校验失败异常
+     */
+    @ExceptionHandler
+    public Result exceptionHandler(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getDefaultMessage())
+                .collect(Collectors.joining("；"));
+        log.warn("参数校验失败：{}", message);
+        return Result.error(message);
     }
 
     /**
