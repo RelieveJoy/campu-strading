@@ -1,5 +1,6 @@
 package com.campus.service.impl;
 
+import com.campus.annotation.CacheInvalidate;
 import com.campus.constant.MessageConstant;
 import com.campus.context.BaseContext;
 import com.campus.dto.ItemDTO;
@@ -30,6 +31,7 @@ public class ItemServiceImpl implements ItemService {
     private RedisTemplate redisTemplate;
 
     @Override
+    @CacheInvalidate
     public void add(ItemDTO itemDTO) {
         Item item = new Item();
         BeanUtils.copyProperties(itemDTO, item);
@@ -40,6 +42,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @CacheInvalidate
     public void update(Long itemId, ItemDTO itemDTO) {
         Item item = itemMapper.getById(itemId);
         if (item == null) {
@@ -54,6 +57,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @CacheInvalidate
     public void delete(Long itemId) {
         Item item = itemMapper.getById(itemId);
         if (item == null) {
@@ -67,6 +71,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @CacheInvalidate
     public void relist(Long itemId) {
         Item item = itemMapper.getById(itemId);
         if (item == null) {

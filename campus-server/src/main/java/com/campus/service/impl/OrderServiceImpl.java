@@ -1,5 +1,6 @@
 package com.campus.service.impl;
 
+import com.campus.annotation.CacheInvalidate;
 import com.campus.constant.MessageConstant;
 import com.campus.context.BaseContext;
 import com.campus.dto.OrdersDTO;
@@ -30,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    @CacheInvalidate
     public void create(OrdersDTO ordersDTO) {
         Long buyerId = BaseContext.getCurrentId();
         Item item = itemMapper.getById(ordersDTO.getItemId());
@@ -74,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    @CacheInvalidate
     public void cancel(Long orderId) {
         Orders order = orderMapper.getById(orderId);
         if (order == null) {
