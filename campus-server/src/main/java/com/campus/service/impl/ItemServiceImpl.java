@@ -20,6 +20,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -122,7 +123,16 @@ public class ItemServiceImpl implements ItemService {
         dto.setStatus(1);
         PageHelper.startPage(dto.getPage(), dto.getPageSize());
         List<ItemVO> list = itemMapper.pageQuery(dto);
-        redisTemplate.opsForValue().set(key, list, 5, TimeUnit.MINUTES);
+
+        if (list.isEmpty()) {
+            // 穿透防护：空结果也缓存，TTL 较短（1~2 分钟），防止反复查库
+            long ttl = 1 + ThreadLocalRandom.current().nextLong(1);
+            redisTemplate.opsForValue().set(key, list, ttl, TimeUnit.MINUTES);
+        } else {
+            // 雪崩防护：TTL 加随机偏移（5~6 分钟），避免大量缓存同时过期
+            long ttl = 5 + ThreadLocalRandom.current().nextLong(1);
+            redisTemplate.opsForValue().set(key, list, ttl, TimeUnit.MINUTES);
+        }
         return list;
     }
 }

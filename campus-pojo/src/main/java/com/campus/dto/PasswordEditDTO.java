@@ -16,7 +16,7 @@ public class PasswordEditDTO implements Serializable {
     private String oldPassword;
 
     @NotBlank(message = "新密码不能为空")
-    @Size(min = 6, max = 20, message = "新密码长度为6-20位")
+    @Size(min = 6, max = 255, message = "新密码长度为6-255位")
     @Schema(description = "新密码")
     private String newPassword;
 

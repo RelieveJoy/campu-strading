@@ -37,9 +37,9 @@ dist-ssr/
 .impeccable/
 
 # 设计文档（工具生成的中间产物）
-PLAN.md
-DESIGN.md
-PRODUCT.md
+docs/PLAN.md
+docs/DESIGN.md
+docs/PRODUCT.md
 
 # IDE（补充）
 .vscode/
