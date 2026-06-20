@@ -15,6 +15,11 @@ spring:
     port: ${campus.redis.port}
     password: ${campus.redis.password}
     database: ${campus.redis.database}
+  rabbitmq:
+    host: ${CAMPUS_RABBITMQ_HOST:localhost}
+    port: ${CAMPUS_RABBITMQ_PORT:5672}
+    username: ${CAMPUS_RABBITMQ_USERNAME:admin}
+    password: ${CAMPUS_RABBITMQ_PASSWORD:admin}
 mybatis:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml

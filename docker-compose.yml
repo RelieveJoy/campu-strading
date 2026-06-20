@@ -28,6 +28,23 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: campus-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${CAMPUS_RABBITMQ_USERNAME:-admin}
+      RABBITMQ_DEFAULT_PASS: ${CAMPUS_RABBITMQ_PASSWORD:-admin}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: ./campus-server
     container_name: campus-backend
@@ -46,6 +63,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   frontend:
     build: ./campus-trading-client
@@ -58,3 +77,4 @@ services:
 volumes:
   mysql-data:
   redis-data:
+  rabbitmq-data:

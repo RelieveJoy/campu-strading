@@ -3,18 +3,23 @@ package com.campus.service.impl;
 import com.campus.annotation.CacheInvalidate;
 import com.campus.constant.MessageConstant;
 import com.campus.context.BaseContext;
+import com.campus.dto.OrderNotificationDTO;
 import com.campus.dto.OrdersDTO;
 import com.campus.dto.OrdersPageQueryDTO;
 import com.campus.entity.Item;
 import com.campus.entity.Orders;
 import com.campus.exception.OrderBusinessException;
+import com.campus.entity.User;
 import com.campus.mapper.ItemMapper;
 import com.campus.mapper.OrderMapper;
+import com.campus.mapper.UserMapper;
+import com.campus.mq.NotificationProducer;
 import com.campus.result.PageResult;
 import com.campus.service.OrderService;
 import com.campus.vo.OrderVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +27,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
     private ItemMapper itemMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private NotificationProducer notificationProducer;
 
     @Override
     @Transactional
@@ -56,6 +66,9 @@ public class OrderServiceImpl implements OrderService {
                 .status(Orders.TO_BE_CONFIRMED)
                 .build();
         orderMapper.insert(order);
+
+        // 发送通知：有人买了你的商品
+        sendNotification(order, item.getTitle(), "CREATED");
     }
 
     @Override
@@ -72,6 +85,10 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setStatus(Orders.COMPLETED);
         orderMapper.update(order);
+
+        // 发送通知：卖家已确认完成
+        Item item = itemMapper.getById(order.getItemId());
+        sendNotification(order, item != null ? item.getTitle() : "未知商品", "CONFIRMED");
     }
 
     @Override
@@ -95,6 +112,31 @@ public class OrderServiceImpl implements OrderService {
         Item item = itemMapper.getById(order.getItemId());
         item.setStatus(1);
         itemMapper.update(item);
+
+        // 发送通知：订单已取消
+        sendNotification(order, item.getTitle(), "CANCELLED");
+    }
+
+    /**
+     * 构建通知消息并发送到 RabbitMQ。
+     */
+    private void sendNotification(Orders order, String itemTitle, String type) {
+        try {
+            User buyer = userMapper.getById(order.getBuyerId());
+            notificationProducer.send(OrderNotificationDTO.builder()
+                    .orderId(order.getOrderId())
+                    .itemId(order.getItemId())
+                    .itemTitle(itemTitle)
+                    .amount(order.getAmount())
+                    .buyerId(order.getBuyerId())
+                    .buyerName(buyer != null ? buyer.getUsername() : "未知")
+                    .sellerId(order.getSellerId())
+                    .type(type)
+                    .build());
+        } catch (Exception e) {
+            // 通知发送失败不影响主流程
+            log.warn("通知发送失败: {}", e.getMessage());
+        }
     }
 
     @Override
