@@ -1,5 +1,6 @@
 package com.campus.task;
 
+import com.campus.annotation.DistributedLock;
 import com.campus.mapper.ItemMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class ViewCountSyncTask {
     @Autowired
     private ItemMapper itemMapper;
 
+    @DistributedLock(key = "viewCountSync", waitTime = 1, leaseTime = 30)
     @Scheduled(cron = "0 */5 * * * ?")
     public void syncViewCount() {
         log.info("开始同步商品浏览量...");

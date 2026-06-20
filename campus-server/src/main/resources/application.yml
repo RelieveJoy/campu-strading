@@ -15,6 +15,12 @@ spring:
     port: ${campus.redis.port}
     password: ${campus.redis.password}
     database: ${campus.redis.database}
+    redisson:
+      config: |
+        singleServerConfig:
+          address: "redis://${campus.redis.host}:${campus.redis.port}"
+          password: ${campus.redis.password}
+          database: ${campus.redis.database}
   rabbitmq:
     host: ${CAMPUS_RABBITMQ_HOST:localhost}
     port: ${CAMPUS_RABBITMQ_PORT:5672}
