@@ -1,0 +1,53 @@
+spring:
+  profiles:
+    active: test
+  datasource:
+    url: jdbc:h2:mem:campus_trading;MODE=MySQL;NON_KEYWORDS=USER;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  sql:
+    init:
+      mode: never
+  h2:
+    console:
+      enabled: true
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    database: 10
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.campus.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com.campus.mapper: debug
+    com.campus.service: info
+    com.campus.controller: info
+
+campus:
+  jwt:
+    admin-secret-key: test-admin-secret
+    admin-ttl: 7200000
+    admin-token-name: token
+    user-secret-key: test-user-secret
+    user-ttl: 7200000
+    user-token-name: authentication
+  alioss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: test
+    access-key-secret: test
+    bucket-name: test
+  wechat:
+    appid: test
+    secret: test
