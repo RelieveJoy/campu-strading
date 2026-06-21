@@ -205,7 +205,7 @@
         ref="chatModalRef"
         :item-id="detail.itemId"
         :receiver-id="chatReceiverId || detail.sellerId"
-        :seller-name="isOwner ? '买家' : detail.sellerName"
+        :seller-name="isOwner ? (chatReceiverName || '买家') : detail.sellerName"
         :item-title="detail.title"
       />
 
@@ -246,7 +246,8 @@ const isOwner = ref(false)
 const currentImg = ref(0)
 const previewOpen = ref(false)
 const chatModalRef = ref(null)
-const chatReceiverId = ref(null)  // 从对话列表来时指定的接收者
+const chatReceiverId = ref(null)   // 从对话列表来时指定的接收者
+const chatReceiverName = ref('')   // 接收者姓名
 
 function openContact() {
   if (!loggedIn.value) { requireLogin(); return }
@@ -342,6 +343,7 @@ onMounted(async () => {
       if (String(openChat.itemId) === String(route.params.id)) {
         sessionStorage.removeItem('openChat')
         if (openChat.receiverId) chatReceiverId.value = openChat.receiverId
+        if (openChat.receiverName) chatReceiverName.value = openChat.receiverName
         setTimeout(() => chatModalRef.value?.open(), 300)
       }
     } catch {

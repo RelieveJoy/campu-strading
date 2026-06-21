@@ -46,8 +46,11 @@ public class ChatController {
         Long senderId = BaseContext.getCurrentId();
         MessageVO vo = messageService.send(senderId, dto.getItemId(), dto.getReceiverId(), dto.getContent());
 
-        // WebSocket 推送给订阅了这个商品聊天的双方
-        messagingTemplate.convertAndSend("/topic/item." + dto.getItemId(), vo);
+        // 只推送给收发双方各自的频道（不广播给所有订阅者）
+        messagingTemplate.convertAndSend(
+                "/topic/chat." + senderId + "." + dto.getItemId(), vo);
+        messagingTemplate.convertAndSend(
+                "/topic/chat." + dto.getReceiverId() + "." + dto.getItemId(), vo);
 
         return Result.success(vo);
     }

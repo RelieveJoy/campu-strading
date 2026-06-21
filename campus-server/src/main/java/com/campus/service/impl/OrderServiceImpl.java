@@ -123,6 +123,10 @@ public class OrderServiceImpl implements OrderService {
     private void sendNotification(Orders order, String itemTitle, String type) {
         try {
             User buyer = userMapper.getById(order.getBuyerId());
+            User seller = userMapper.getById(order.getSellerId());
+            Long currentUserId = BaseContext.getCurrentId();
+            boolean iAmBuyer = currentUserId.equals(order.getBuyerId());
+
             notificationProducer.send(OrderNotificationDTO.builder()
                     .orderId(order.getOrderId())
                     .itemId(order.getItemId())
@@ -131,6 +135,11 @@ public class OrderServiceImpl implements OrderService {
                     .buyerId(order.getBuyerId())
                     .buyerName(buyer != null ? buyer.getUsername() : "未知")
                     .sellerId(order.getSellerId())
+                    .sellerName(seller != null ? seller.getUsername() : "未知")
+                    .triggerUserId(currentUserId)
+                    .triggerUserName(iAmBuyer
+                            ? (buyer != null ? buyer.getUsername() : "买家")
+                            : (seller != null ? seller.getUsername() : "卖家"))
                     .type(type)
                     .build());
         } catch (Exception e) {

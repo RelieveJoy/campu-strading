@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS notification;
 DROP TABLE IF EXISTS message;
 DROP TABLE IF EXISTS favorite;
 DROP TABLE IF EXISTS orders;
@@ -89,4 +90,18 @@ CREATE TABLE message (
     is_read     TINYINT  DEFAULT 0,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (message_id)
+);
+
+CREATE TABLE notification (
+    notification_id BIGINT       NOT NULL AUTO_INCREMENT,
+    user_id         BIGINT       NOT NULL,
+    initiator_id    BIGINT       NOT NULL,
+    initiator_name  VARCHAR(50)  DEFAULT NULL,
+    type            VARCHAR(30)  NOT NULL,
+    order_id        BIGINT       NOT NULL,
+    item_title      VARCHAR(100) DEFAULT NULL,
+    content         VARCHAR(200) NOT NULL,
+    is_read         TINYINT      DEFAULT 0,
+    create_time     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (notification_id)
 );

@@ -29,8 +29,11 @@
                 :class="{ mine: msg.senderId === myId }"
               >
                 <div class="msg-bubble">
+                  <span class="msg-meta">
+                    <span class="msg-sender" v-if="msg.senderId !== myId && msg.senderName">{{ msg.senderName }}</span>
+                    <span class="msg-time">{{ formatTime(msg.createTime || msg.createdAt) }}</span>
+                  </span>
                   <p class="msg-text">{{ msg.content }}</p>
-                  <span class="msg-time">{{ formatTime(msg.createTime || msg.createdAt) }}</span>
                 </div>
               </div>
             </template>
@@ -39,6 +42,7 @@
           <!-- 输入框 -->
           <div class="chat-footer">
             <input
+              ref="inputRef"
               v-model="text"
               type="text"
               class="chat-input"
@@ -78,6 +82,7 @@ const sending = ref(false)
 const messages = ref([])
 const text = ref('')
 const bodyRef = ref(null)
+const inputRef = ref(null)
 let stompClient = null
 
 const myId = (() => {
@@ -113,14 +118,10 @@ function connectWebSocket() {
     webSocketFactory: () => socket,
     reconnectDelay: 5000,
     onConnect: () => {
-      stompClient.subscribe(`/topic/item.${props.itemId}`, (msg) => {
+      stompClient.subscribe(`/topic/chat.${myId}.${props.itemId}`, (msg) => {
         try {
           const body = JSON.parse(msg.body)
-          // 只处理与当前对话相关的消息（买家和卖家 ID 匹配）
-          const otherId = Number(props.receiverId)
-          const isRelevant = (body.senderId === otherId && body.receiverId === myId)
-                          || (body.senderId === myId && body.receiverId === otherId)
-          if (isRelevant && body.senderId !== myId) {
+          if (body.senderId !== myId) {
             messages.value.push(body)
             nextTick(() => scrollToBottom())
           }
@@ -169,7 +170,11 @@ async function send() {
     await nextTick()
     scrollToBottom()
   } catch { ElMessage.error('发送失败') }
-  finally { sending.value = false }
+  finally {
+    sending.value = false
+    await nextTick()
+    inputRef.value?.focus()
+  }
 }
 
 function scrollToBottom() {
@@ -244,10 +249,12 @@ defineExpose({ open, close })
   border-bottom-right-radius: 4px;
 }
 .msg-text { margin: 0; word-break: break-word; }
-.msg-time {
-  font-size: 0.625rem; opacity: 0.6; margin-top: 2px;
-  display: block; text-align: right;
+.msg-meta {
+  font-size: 0.625rem; opacity: 0.6; margin-bottom: 2px;
+  display: flex; gap: 6px; align-items: center;
 }
+.msg-sender { font-weight: 500; opacity: 1; }
+.msg-time { opacity: 1; }
 
 /* Footer */
 .chat-footer {

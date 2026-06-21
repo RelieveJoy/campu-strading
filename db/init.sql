@@ -96,3 +96,19 @@ CREATE TABLE IF NOT EXISTS message (
     KEY idx_receiver (receiver_id),
     KEY idx_item_users (item_id, sender_id, receiver_id)
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS notification (
+    notification_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    user_id         BIGINT       NOT NULL COMMENT '接收通知的用户ID',
+    initiator_id    BIGINT       NOT NULL COMMENT '触发通知的用户ID',
+    initiator_name  VARCHAR(50)  DEFAULT NULL COMMENT '触发者用户名',
+    type            VARCHAR(30)  NOT NULL COMMENT 'CREATED/CONFIRMED/CANCELLED',
+    order_id        BIGINT       NOT NULL COMMENT '关联订单ID',
+    item_title      VARCHAR(100) DEFAULT NULL COMMENT '商品标题',
+    content         VARCHAR(200) NOT NULL COMMENT '通知内容',
+    is_read         TINYINT      DEFAULT 0 COMMENT '0未读 1已读',
+    create_time     DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (notification_id),
+    KEY idx_user_read (user_id, is_read),
+    KEY idx_time (create_time)
+) ENGINE=InnoDB;

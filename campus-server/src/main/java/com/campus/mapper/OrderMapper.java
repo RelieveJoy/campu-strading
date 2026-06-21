@@ -7,6 +7,7 @@ import com.campus.enumeration.OperationType;
 import com.campus.vo.OrderVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface OrderMapper {
 
     @Insert("insert into orders(item_id, buyer_id, seller_id, amount, status, create_time, update_time, create_user, update_user) " +
             "values (#{itemId}, #{buyerId}, #{sellerId}, #{amount}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+    @Options(useGeneratedKeys = true, keyProperty = "orderId")
     @AutoFill(OperationType.INSERT)
     void insert(Orders order);
 

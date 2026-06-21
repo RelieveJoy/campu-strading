@@ -29,8 +29,14 @@ public class OrderNotificationDTO implements Serializable {
     private Long buyerId;
     /** 买家名 */
     private String buyerName;
-    /** 卖家ID（接收通知的人） */
+    /** 卖家ID */
     private Long sellerId;
+    /** 卖家名 */
+    private String sellerName;
+    /** 触发操作的发起者ID */
+    private Long triggerUserId;
+    /** 触发操作的发起者名 */
+    private String triggerUserName;
     /** 通知类型：CREATED / CONFIRMED / CANCELLED */
     private String type;
 }
