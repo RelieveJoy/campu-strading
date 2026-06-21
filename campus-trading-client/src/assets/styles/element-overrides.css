@@ -1,83 +1,83 @@
 /* ═════════════════════════════════════════════════════════════════
-   Campus Trading — Element Plus Theme Overrides
-   Maps Element Plus CSS variables to our Campus design tokens.
+   操场集市 — Element Plus Theme Overrides
+   将 Element Plus CSS 变量映射到深蓝 #204198 体系
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Brand primary → Campus Coral ── */
+  /* ── Brand primary → 深蓝 #204198 ── */
   --el-color-primary:           var(--color-primary);
-  --el-color-primary-light-3:   var(--color-primary-light);
-  --el-color-primary-light-5:   oklch(0.88 0.04 28);
-  --el-color-primary-light-7:   oklch(0.84 0.06 28);
-  --el-color-primary-light-8:   oklch(0.80 0.08 28);
-  --el-color-primary-light-9:   oklch(0.75 0.10 28);
+  --el-color-primary-light-3:   #7a8ec9;
+  --el-color-primary-light-5:   #AEBAD9;
+  --el-color-primary-light-7:   #cacedc;
+  --el-color-primary-light-8:   #dde1ee;
+  --el-color-primary-light-9:   #eef0f7;
   --el-color-primary-dark-2:    var(--color-primary-hover);
 
   /* ── Semantic colors ── */
   --el-color-success:           var(--color-success);
-  --el-color-success-light-3:   var(--color-success-light);
-  --el-color-success-light-5:   oklch(0.88 0.05 145);
-  --el-color-success-light-7:   oklch(0.84 0.07 145);
-  --el-color-success-light-8:   oklch(0.80 0.09 145);
-  --el-color-success-light-9:   oklch(0.76 0.11 145);
-  --el-color-success-dark-2:    oklch(0.46 0.17 145);
+  --el-color-success-light-3:   #6ec89a;
+  --el-color-success-light-5:   #a3dbb9;
+  --el-color-success-light-7:   #c1e8d1;
+  --el-color-success-light-8:   #d6f0e1;
+  --el-color-success-light-9:   #ebf7f0;
+  --el-color-success-dark-2:    #157347;
 
   --el-color-warning:           var(--color-warning);
-  --el-color-warning-light-3:   var(--color-warning-light);
-  --el-color-warning-light-5:   oklch(0.90 0.07 85);
-  --el-color-warning-light-7:   oklch(0.87 0.08 85);
-  --el-color-warning-light-8:   oklch(0.84 0.09 85);
-  --el-color-warning-light-9:   oklch(0.81 0.10 85);
-  --el-color-warning-dark-2:    oklch(0.52 0.19 85);
+  --el-color-warning-light-3:   #ffda4d;
+  --el-color-warning-light-5:   #ffe580;
+  --el-color-warning-light-7:   #ffedb3;
+  --el-color-warning-light-8:   #fff3cc;
+  --el-color-warning-light-9:   #fff9e6;
+  --el-color-warning-dark-2:    #e6ac00;
 
   --el-color-danger:            var(--color-danger);
-  --el-color-danger-light-3:    var(--color-danger-light);
-  --el-color-danger-light-5:    oklch(0.90 0.04 15);
-  --el-color-danger-light-7:    oklch(0.86 0.06 15);
-  --el-color-danger-light-8:    oklch(0.82 0.08 15);
-  --el-color-danger-light-9:    oklch(0.78 0.10 15);
-  --el-color-danger-dark-2:     oklch(0.42 0.20 15);
+  --el-color-danger-light-3:    #e66875;
+  --el-color-danger-light-5:    #f098a1;
+  --el-color-danger-light-7:    #f5c2c7;
+  --el-color-danger-light-8:    #f8d7da;
+  --el-color-danger-light-9:    #fbeaec;
+  --el-color-danger-dark-2:     var(--color-danger-hover);
 
   --el-color-info:              var(--color-info);
-  --el-color-info-light-3:      var(--color-info-light);
-  --el-color-info-light-5:      oklch(0.90 0.04 240);
-  --el-color-info-light-7:      oklch(0.87 0.06 240);
-  --el-color-info-light-8:      oklch(0.84 0.08 240);
-  --el-color-info-light-9:      oklch(0.81 0.10 240);
-  --el-color-info-dark-2:       oklch(0.49 0.13 240);
+  --el-color-info-light-3:      #4dddf6;
+  --el-color-info-light-5:      #80e7f9;
+  --el-color-info-light-7:      #b3effb;
+  --el-color-info-light-8:      #ccf4fc;
+  --el-color-info-light-9:      #e6f9fd;
+  --el-color-info-dark-2:       #0aa2c0;
 
   /* ── Neutral / structural ── */
   --el-bg-color:                var(--color-bg);
-  --el-bg-color-page:           var(--color-bg);
-  --el-bg-color-overlay:        var(--color-bg);
-  --el-border-color:            var(--color-border);
-  --el-border-color-light:      var(--color-divider);
-  --el-border-color-lighter:    var(--color-divider);
+  --el-bg-color-page:          var(--color-bg);
+  --el-bg-color-overlay:       var(--color-bg);
+  --el-border-color:           var(--color-border);
+  --el-border-color-light:     var(--color-divider);
+  --el-border-color-lighter:   var(--color-divider);
   --el-border-color-extra-light: var(--color-divider);
-  --el-text-color-primary:      var(--color-ink);
-  --el-text-color-regular:      var(--color-ink);
-  --el-text-color-secondary:    var(--color-muted);
-  --el-text-color-placeholder:  oklch(0.65 0.005 28);
-  --el-text-color-disabled:     oklch(0.75 0.003 60);
-  --el-fill-color:              var(--color-surface);
-  --el-fill-color-light:        var(--color-surface);
-  --el-fill-color-lighter:      oklch(0.98 0.002 60);
-  --el-fill-color-blank:        var(--color-bg);
-  --el-bg-color-container:      var(--color-bg);
+  --el-text-color-primary:     var(--color-ink);
+  --el-text-color-regular:     var(--color-ink);
+  --el-text-color-secondary:   var(--color-muted);
+  --el-text-color-placeholder: #adb5bd;
+  --el-text-color-disabled:    #ced4da;
+  --el-fill-color:             var(--color-surface);
+  --el-fill-color-light:       var(--color-surface);
+  --el-fill-color-lighter:     #fafbfc;
+  --el-fill-color-blank:       var(--color-bg);
+  --el-bg-color-container:     var(--color-bg);
 
   /* ── Border radius ── */
-  --el-border-radius-base:      var(--radius-md);
-  --el-border-radius-small:     var(--radius-sm);
-  --el-border-radius-round:     var(--radius-full);
+  --el-border-radius-base:     var(--radius-md);
+  --el-border-radius-small:    var(--radius-sm);
+  --el-border-radius-round:    var(--radius-full);
 
   /* ── Typography ── */
-  --el-font-family:             var(--font-family);
+  --el-font-family:            var(--font-family);
 
   /* ── Disabled state ── */
-  --el-disabled-bg-color:       var(--color-surface);
-  --el-disabled-text-color:     var(--color-muted);
-  --el-disabled-border-color:   var(--color-border);
+  --el-disabled-bg-color:      var(--color-surface);
+  --el-disabled-text-color:    var(--color-muted);
+  --el-disabled-border-color:  var(--color-border);
 
   /* ── Overlay / mask ── */
-  --el-overlay-color-lighter:   rgba(0, 0, 0, 0.3);
+  --el-overlay-color-lighter:  rgba(0, 0, 0, 0.3);
 }

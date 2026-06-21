@@ -10,16 +10,17 @@ spring:
       url: jdbc:mysql://${campus.datasource.host}:${campus.datasource.port}/${campus.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${campus.datasource.username}
       password: ${campus.datasource.password}
+  data:
+    redis:
+      host: ${campus.redis.host}
+      port: ${campus.redis.port}
+      password: ${campus.redis.password}
+      database: ${campus.redis.database}
   redis:
-    host: ${campus.redis.host}
-    port: ${campus.redis.port}
-    password: ${campus.redis.password}
-    database: ${campus.redis.database}
     redisson:
       config: |
         singleServerConfig:
           address: "redis://${campus.redis.host}:${campus.redis.port}"
-          password: ${campus.redis.password}
           database: ${campus.redis.database}
   rabbitmq:
     host: ${CAMPUS_RABBITMQ_HOST:localhost}

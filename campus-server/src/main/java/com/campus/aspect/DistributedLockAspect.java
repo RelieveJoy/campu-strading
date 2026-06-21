@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Aspect
 @Component
+@ConditionalOnBean(RedissonClient.class)
 @RequiredArgsConstructor
 @Slf4j
 public class DistributedLockAspect {

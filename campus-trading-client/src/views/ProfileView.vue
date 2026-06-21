@@ -162,7 +162,7 @@ onMounted(fetchProfile)
 </script>
 
 <style scoped>
-.profile-page { max-width: 540px; margin: 0 auto; }
+.profile-page { max-width: 540px; margin: 0 auto; padding: var(--space-lg); }
 
 .page-header { margin-bottom: var(--space-lg); }
 .page-header h1 { font-size: var(--font-display-size); font-weight: var(--font-display-weight); color: var(--color-ink); }

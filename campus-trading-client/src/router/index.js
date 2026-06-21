@@ -12,6 +12,9 @@ const routes = [
     component: LayoutView,
     children: [
       { path: '', name: 'Home', component: () => import('../views/HomeView.vue') },
+      { path: 'goods', name: 'GoodsList', component: () => import('../views/GoodsListView.vue') },
+      { path: 'lostfound', name: 'LostFound', component: () => import('../views/LostFoundView.vue') },
+      { path: 'notice', name: 'Notice', component: () => import('../views/NoticeView.vue') },
       { path: 'item/:id', name: 'ItemDetail', component: () => import('../views/ItemDetail.vue') },
       { path: 'publish', name: 'PublishItem', component: () => import('../views/PublishItem.vue') },
       { path: 'edit/:id', name: 'EditItem', component: () => import('../views/PublishItem.vue') },
@@ -19,6 +22,7 @@ const routes = [
       { path: 'my-items', name: 'MyItems', component: () => import('../views/MyItems.vue') },
       { path: 'my-favorites', name: 'MyFavorites', component: () => import('../views/MyFavorites.vue') },
       { path: 'orders', name: 'MyOrders', component: () => import('../views/MyOrders.vue') },
+      { path: 'messages', name: 'MyMessages', component: () => import('../views/MyMessages.vue') },
       { path: 'stats', name: 'Stats', component: () => import('../views/StatsView.vue') },
     ],
   },

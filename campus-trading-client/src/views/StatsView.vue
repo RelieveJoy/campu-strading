@@ -42,23 +42,22 @@ const hasCategoryData = ref(true)
 const hasPriceData = ref(true)
 const hasTradeData = ref(true)
 
-// ── Brand-aligned ECharts colors ──
-// Coral primary → pie slices, bar fill
-// Sky accent → secondary data series
-const CORAL = 'oklch(0.50 0.16 28)'
-const CORAL_LIGHT = 'oklch(0.65 0.12 28)'
-const SKY = 'oklch(0.52 0.15 215)'
-const SKY_LIGHT = 'oklch(0.68 0.10 215)'
-const SUCCESS = 'oklch(0.52 0.16 145)'
-const WARNING = 'oklch(0.58 0.18 85)'
+// ── Brand-aligned ECharts colors (深蓝 #204198 体系) ──
+const BLUE = '#204198'
+const BLUE_LIGHT = '#AEBAD9'
+const BLUE_LIGHTER = '#d6dcf0'
+const BLUE_DARK = '#142960'
+const SUCCESS = '#198754'
+const WARNING = '#ffc107'
+const BLUE_ACCENT = '#5b8def'
 const BRAND_COLORS = [
-  CORAL, SKY, SUCCESS, WARNING,
-  'oklch(0.48 0.14 340)', // rose
-  'oklch(0.50 0.14 80)',  // amber-green
+  BLUE, BLUE_LIGHT, SUCCESS, WARNING,
+  '#6f42c1', // purple
+  '#fd7e14', // orange
 ]
-const TEXT_COLOR = 'oklch(0.35 0.005 28)'
-const MUTED_COLOR = 'oklch(0.58 0.005 28)'
-const BORDER_COLOR = 'oklch(0.88 0.005 60)'
+const TEXT_COLOR = '#212529'
+const MUTED_COLOR = '#6c757d'
+const BORDER_COLOR = '#dee2e6'
 
 const chartTheme = {
   textStyle: { fontFamily: "'PingFang SC','Microsoft YaHei',system-ui,sans-serif" },
@@ -110,7 +109,7 @@ async function initBar() {
       nameTextStyle: { color: MUTED_COLOR, fontSize: 11 },
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: { lineStyle: { color: 'oklch(0.93 0.003 60)' } },
+      splitLine: { lineStyle: { color: '#e9ecef' } },
       axisLabel: { color: MUTED_COLOR, fontSize: 11 },
     },
     series: [{
@@ -118,13 +117,13 @@ async function initBar() {
       data: data.map((i) => i.value),
       itemStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: CORAL },
-          { offset: 1, color: CORAL_LIGHT },
+          { offset: 0, color: BLUE },
+          { offset: 1, color: BLUE_LIGHT },
         ]),
         borderRadius: [6, 6, 0, 0],
       },
       barWidth: '50%',
-      emphasis: { itemStyle: { color: CORAL } },
+      emphasis: { itemStyle: { color: BLUE } },
     }],
   })
 }
@@ -153,7 +152,7 @@ async function initLine() {
       nameTextStyle: { color: MUTED_COLOR, fontSize: 11 },
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: { lineStyle: { color: 'oklch(0.93 0.003 60)' } },
+      splitLine: { lineStyle: { color: '#e9ecef' } },
       axisLabel: { color: MUTED_COLOR, fontSize: 11 },
     },
     series: [{
@@ -162,12 +161,12 @@ async function initLine() {
       smooth: true,
       symbol: 'circle',
       symbolSize: 6,
-      lineStyle: { color: SKY, width: 2.5 },
-      itemStyle: { color: SKY },
+      lineStyle: { color: BLUE, width: 2.5 },
+      itemStyle: { color: BLUE },
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'oklch(0.52 0.15 215 / 0.18)' },
-          { offset: 1, color: 'oklch(0.52 0.15 215 / 0.02)' },
+          { offset: 0, color: 'rgba(32,65,152,0.18)' },
+          { offset: 1, color: 'rgba(32,65,152,0.02)' },
         ]),
       },
     }],
@@ -183,7 +182,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.stats-page { max-width: 1100px; margin: 0 auto; }
+.stats-page { max-width: 1100px; margin: 0 auto; padding: var(--space-lg); }
 
 .page-header { margin-bottom: var(--space-lg); }
 .page-header h1 { font-size: var(--font-display-size); font-weight: var(--font-display-weight); color: var(--color-ink); margin-bottom: var(--space-xs); }

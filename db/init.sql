@@ -82,3 +82,17 @@ CREATE TABLE IF NOT EXISTS favorite (
     KEY idx_item (item_id),
     UNIQUE KEY uk_user_item (user_id, item_id)
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS message (
+    message_id  BIGINT   NOT NULL AUTO_INCREMENT COMMENT '主键',
+    item_id     BIGINT   NOT NULL COMMENT '商品ID',
+    sender_id   BIGINT   NOT NULL COMMENT '发送者用户ID',
+    receiver_id BIGINT   NOT NULL COMMENT '接收者用户ID',
+    content     TEXT     NOT NULL COMMENT '消息内容',
+    is_read     TINYINT  DEFAULT 0 COMMENT '0未读 1已读',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (message_id),
+    KEY idx_item (item_id),
+    KEY idx_receiver (receiver_id),
+    KEY idx_item_users (item_id, sender_id, receiver_id)
+) ENGINE=InnoDB;

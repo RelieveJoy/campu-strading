@@ -1,486 +1,282 @@
 <template>
   <div class="home">
-    <!-- ── Search Section ── -->
-    <section class="search-section">
-      <div class="search-inner">
-        <div class="search-main">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input
-            v-model="keyword"
-            type="text"
-            class="search-input"
-            placeholder="搜索你想要的二手好物..."
-            @keyup.enter="search"
-          />
-        </div>
-        <div class="search-filters">
-          <div class="filter-group">
-            <span class="filter-label">价格</span>
-            <input v-model.number="minPrice" type="number" class="price-input" placeholder="最低" min="0" />
-            <span class="price-sep">—</span>
-            <input v-model.number="maxPrice" type="number" class="price-input" placeholder="最高" min="0" />
+    <!-- ── 轮播图 ── -->
+    <BannerCarousel :banners="banners" />
+
+    <!-- ── 分类入口 ── -->
+    <section class="section">
+      <CategoryGrid :categories="categories" />
+    </section>
+
+    <!-- ── 最新上架 ── -->
+    <section class="section">
+      <div class="section-header">
+        <h5 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" class="section-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          最新上架
+        </h5>
+        <router-link to="/goods?sort=newest" class="section-more">
+          查看更多
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </router-link>
+      </div>
+
+      <!-- Loading -->
+      <div v-if="latestLoading" class="goods-grid">
+        <div v-for="n in 8" :key="n" class="skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-80"></div>
+            <div class="skeleton-line w-40"></div>
           </div>
-          <button class="btn-search" @click="search">搜索</button>
         </div>
+      </div>
+
+      <!-- Empty -->
+      <div v-else-if="latestItems.length === 0" class="empty-mini">
+        <p>暂无商品，<router-link to="/publish">去发布</router-link></p>
+      </div>
+
+      <!-- Grid -->
+      <div v-else class="goods-grid">
+        <GoodsCard v-for="item in latestItems" :key="item.id || item.itemId" :goods="item" />
       </div>
     </section>
 
-    <!-- ── Category Chips ── -->
-    <div class="category-strip">
-      <button
-        class="chip"
-        :class="{ active: categoryId === null }"
-        @click="selectCategory(null)"
-      >全部</button>
-      <button
-        v-for="c in categories"
-        :key="c.value"
-        class="chip"
-        :class="{ active: categoryId === c.value }"
-        @click="selectCategory(c.value)"
-      >{{ c.label }}</button>
-    </div>
+    <!-- ── 热门商品 ── -->
+    <section class="section bg-light">
+      <div class="section-header">
+        <h5 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" class="section-icon fire"><path d="M18.816 13.58c2.292 2.138 3.546 5.42 2.207 8.326-1.231 2.672-4.082 4.094-7.023 4.094-4.416 0-8-3.584-8-8 0-3.58 2.058-7.001 5.976-10.284l1.972 1.972c1.2 1.2 1.48 2.1 1.48 3 0 .829-.488 1.664-.976 1.828-.44.147-.78-.118-.78-.656 0-.196-.416-.488-.416-.488s-.822-.538-.878-1.074c-.1-.98.567-1.147.567-1.147 2.058.627 4.87 3.367 4.87 6.429z"/></svg>
+          热门商品
+        </h5>
+        <router-link to="/goods?sort=hottest" class="section-more">
+          查看更多
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </router-link>
+      </div>
 
-    <!-- ── Loading State ── -->
-    <div v-if="loading" class="item-grid">
-      <div v-for="n in 8" :key="n" class="skeleton-card">
-        <div class="skeleton-image"></div>
-        <div class="skeleton-body">
-          <div class="skeleton-line w-80"></div>
-          <div class="skeleton-line w-40"></div>
-          <div class="skeleton-line w-60 short"></div>
+      <div v-if="hotLoading" class="goods-grid">
+        <div v-for="n in 4" :key="n" class="skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-80"></div>
+            <div class="skeleton-line w-40"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ── Empty State ── -->
-    <div v-else-if="!loading && items.length === 0" class="empty-state">
-      <div class="empty-illustration">
-        <svg viewBox="0 0 120 120" fill="none">
-          <circle cx="60" cy="60" r="54" fill="var(--color-primary-light)" />
-          <path d="M40 50h40M40 65h30M40 80h20" stroke="var(--color-primary)" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="85" cy="45" r="12" fill="var(--color-bg)" stroke="var(--color-primary)" stroke-width="2.5"/>
-          <path d="M82 45l2-2 2 2 4-4" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+      <div v-else-if="hotItems.length === 0" class="empty-mini">
+        <p>暂无热门商品</p>
       </div>
-      <h2 class="empty-title">还没有商品</h2>
-      <p class="empty-desc">成为第一个发布闲置物品的人吧</p>
-      <button class="btn-primary" @click="$router.push('/publish')">发布商品</button>
-    </div>
 
-    <!-- ── Product Grid ── -->
-    <div v-else class="item-grid">
-      <article
-        v-for="item in items"
-        :key="item.itemId"
-        class="item-card"
-        @click="$router.push(`/item/${item.itemId}`)"
-      >
-        <div class="card-image-wrap">
-          <el-image
-            v-if="item.imageUrl"
-            :src="item.imageUrl"
-            fit="cover"
-            class="card-image"
-            lazy
-          >
-            <template #error>
-              <div class="card-image-fallback">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="fallback-icon">
-                  <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-                  <path d="m21 15-5-5L5 21"/>
-                </svg>
-              </div>
-            </template>
-          </el-image>
-          <div v-else class="card-image-fallback">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="fallback-icon">
-              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-              <path d="m21 15-5-5L5 21"/>
-            </svg>
-          </div>
-          <span class="card-category" v-if="item.categoryName">{{ item.categoryName }}</span>
-        </div>
+      <div v-else class="goods-grid">
+        <GoodsCard v-for="item in hotItems" :key="item.id || item.itemId" :goods="item" />
+      </div>
+    </section>
 
-        <div class="card-body">
-          <h3 class="card-title">{{ item.title }}</h3>
-          <div class="card-price-row">
-            <span class="card-price">¥{{ item.price }}</span>
-            <span class="card-original" v-if="item.originalPrice">¥{{ item.originalPrice }}</span>
-          </div>
-          <div class="card-meta">
-            <span class="card-seller">{{ item.sellerName }}</span>
-            <span class="card-views" v-if="item.viewCount">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="views-icon">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-              {{ item.viewCount }}
-            </span>
+    <!-- ── 最新招领 ── -->
+    <section class="section">
+      <div class="section-header">
+        <h5 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" class="section-icon success"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          最新招领
+        </h5>
+        <router-link to="/lostfound" class="section-more">
+          查看更多
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </router-link>
+      </div>
+
+      <div v-if="lostFoundLoading" class="goods-grid">
+        <div v-for="n in 4" :key="n" class="skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-80"></div>
+            <div class="skeleton-line w-40"></div>
           </div>
         </div>
-      </article>
-    </div>
+      </div>
 
-    <!-- ── Pagination ── -->
-    <div class="pagination-wrap" v-if="total > pageSize && !loading">
-      <el-pagination
-        :current-page="page"
-        :page-size="pageSize"
-        :total="total"
-        layout="prev, pager, next"
-        @current-change="handlePageChange"
-        background
-      />
-    </div>
+      <div v-else-if="lostFoundItems.length === 0" class="empty-mini">
+        <p>暂无招领信息</p>
+      </div>
+
+      <div v-else class="lostfound-mini-grid">
+        <router-link
+          v-for="lf in lostFoundItems"
+          :key="lf.id"
+          :to="`/lostfound/${lf.id}`"
+          class="lostfound-mini-card"
+        >
+          <img :src="lf.image || lf.images?.[0]" :alt="lf.title" @error="onImgError" />
+          <div class="lf-body">
+            <div class="lf-header">
+              <h6>{{ lf.title }}</h6>
+              <span class="lf-badge" :class="lf.status === 'closed' ? 'closed' : 'open'">
+                {{ lf.status === 'closed' ? '已归还' : '可认领' }}
+              </span>
+            </div>
+            <small class="lf-location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {{ lf.location || '校内' }}
+            </small>
+          </div>
+        </router-link>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getItems } from '../api/item'
+import { getBanners } from '../api/banner'
+import { getLostFounds } from '../api/lostfound'
+import BannerCarousel from '../components/BannerCarousel.vue'
+import CategoryGrid from '../components/CategoryGrid.vue'
+import GoodsCard from '../components/GoodsCard.vue'
 
-const items = ref([])
-const total = ref(0)
-const loading = ref(true)
-const page = ref(1)
-const pageSize = 12
-const keyword = ref('')
-const categoryId = ref(null)
-const minPrice = ref(null)
-const maxPrice = ref(null)
+// ── 轮播图 ──
+const banners = ref([])
+onMounted(async () => {
+  try {
+    const res = await getBanners()
+    if (res?.data?.length) banners.value = res.data
+  } catch {
+    // 默认占位 banner
+    banners.value = []
+  }
+})
 
+// ── 分类 ──
 const categories = [
-  { label: '教材', value: 1 },
-  { label: '电子产品', value: 2 },
-  { label: '生活用品', value: 3 },
-  { label: '衣物鞋包', value: 4 },
-  { label: '运动户外', value: 5 },
-  { label: '其他', value: 6 },
+  { id: 1, name: '数码电子', icon: 'bi bi-phone' },
+  { id: 2, name: '书籍教材', icon: 'bi bi-book' },
+  { id: 3, name: '生活用品', icon: 'bi bi-house-heart' },
+  { id: 4, name: '服装鞋帽', icon: 'bi bi-bag' },
+  { id: 5, name: '运动健身', icon: 'bi bi-bicycle' },
+  { id: 6, name: '美妆护肤', icon: 'bi bi-stars' },
+  { id: 7, name: '游戏娱乐', icon: 'bi bi-controller' },
+  { id: 8, name: '其他闲置', icon: 'bi bi-grid' },
 ]
 
-const fetchItems = async () => {
-  loading.value = true
+// ── 最新上架 ──
+const latestItems = ref([])
+const latestLoading = ref(true)
+onMounted(async () => {
   try {
-    const params = { page: page.value, pageSize }
-    if (keyword.value) params.keyword = keyword.value
-    if (categoryId.value != null) params.categoryId = categoryId.value
-    if (minPrice.value != null) params.minPrice = minPrice.value
-    if (maxPrice.value != null) params.maxPrice = maxPrice.value
-    const res = await getItems(params)
-    items.value = res.data.records
-    total.value = res.data.total
-  } catch (e) {
-    items.value = []
-    total.value = 0
-  } finally {
-    loading.value = false
+    const res = await getItems({ page: 1, pageSize: 8, sort: 'newest' })
+    latestItems.value = (res?.data?.records || []).map(normalize)
+  } catch { latestItems.value = [] }
+  finally { latestLoading.value = false }
+})
+
+// ── 热门商品 ──
+const hotItems = ref([])
+const hotLoading = ref(true)
+onMounted(async () => {
+  try {
+    const res = await getItems({ page: 1, pageSize: 4, sort: 'hottest' })
+    hotItems.value = (res?.data?.records || []).map(normalize)
+  } catch { hotItems.value = [] }
+  finally { hotLoading.value = false }
+})
+
+// ── 最新招领 ──
+const lostFoundItems = ref([])
+const lostFoundLoading = ref(true)
+onMounted(async () => {
+  try {
+    const res = await getLostFounds({ page: 1, pageSize: 4 })
+    lostFoundItems.value = res?.data?.records || res?.data || []
+  } catch { lostFoundItems.value = [] }
+  finally { lostFoundLoading.value = false }
+})
+
+// 将后端字段映射为 GoodsCard 需要的字段
+function normalize(item) {
+  return {
+    ...item,
+    id: item.id || item.itemId,
+    image: item.image || item.imageUrl,
+    title: item.title || item.name,
+    price: item.price,
+    condition: item.condition || item.quality,
+    views: item.views || item.viewCount,
+    location: item.location || item.address,
   }
 }
 
-const search = () => { page.value = 1; fetchItems() }
-const selectCategory = (id) => { categoryId.value = id; search() }
-const handlePageChange = (p) => { page.value = p; fetchItems(); window.scrollTo({ top: 0, behavior: 'smooth' }) }
-
-onMounted(fetchItems)
+function onImgError(e) {
+  e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><rect fill="%23f5f6f8" width="300" height="200"/><text x="150" y="100" text-anchor="middle" fill="%23adb5bd" font-size="14">暂无图片</text></svg>'
+}
 </script>
 
 <style scoped>
-/* ── Search Section ── */
-.search-section {
-  margin-bottom: var(--space-lg);
+.home {
+  padding-bottom: var(--space-xxl);
 }
 
-.search-inner {
+.section {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.section.bg-light {
   background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  border: 1px solid var(--color-divider);
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  max-width: none;
+}
+.section.bg-light .section-header,
+.section.bg-light .goods-grid,
+.section.bg-light .empty-mini {
+  max-width: var(--content-max-width);
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.search-main {
+.section-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: var(--space-sm);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 0 var(--space-md);
-  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
   margin-bottom: var(--space-md);
 }
-
-.search-main:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: var(--focus-ring);
-}
-
-.search-icon {
-  width: 20px;
-  height: 20px;
-  color: var(--color-muted);
-  flex-shrink: 0;
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  padding: 12px 0;
-  font-size: var(--font-body-size);
-  color: var(--color-ink);
-  font-family: var(--font-family);
-}
-
-.search-input::placeholder {
-  color: oklch(0.65 0.005 28);
-}
-
-.search-filters {
+.section-title {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  flex-wrap: wrap;
-}
-
-.filter-group {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.filter-label {
-  font-size: var(--font-label-size);
-  font-weight: var(--font-label-weight);
-  color: var(--color-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.price-input {
-  width: 90px;
-  padding: 6px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-body-size);
+  gap: 8px;
+  font-size: 1.0625rem;
+  font-weight: 700;
   color: var(--color-ink);
-  background: var(--color-bg);
-  font-family: var(--font-family);
-  outline: none;
-  transition: border-color var(--duration-fast);
-}
-
-.price-input:focus {
-  border-color: var(--color-primary);
-}
-
-.price-input::placeholder {
-  color: var(--color-muted);
-}
-
-.price-sep {
-  color: var(--color-muted);
-  font-size: var(--font-label-size);
-}
-
-/* Chrome, Safari, Edge, Opera */
-.price-input::-webkit-outer-spin-button,
-.price-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
   margin: 0;
 }
+.section-icon { color: var(--color-primary); }
+.section-icon.fire { color: var(--color-danger); }
+.section-icon.success { color: var(--color-success); }
 
-/* Firefox */
-.price-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-/* ── Search Button ── */
-.btn-search {
-  padding: 8px 28px;
-  background: var(--color-primary);
-  color: var(--color-primary-text);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-body-size);
-  font-weight: 500;
-  font-family: var(--font-family);
-  cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-standard);
-  margin-left: auto;
-}
-
-.btn-search:hover {
-  background: var(--color-primary-hover);
-}
-
-/* ── Category Chips ── */
-.category-strip {
+.section-more {
   display: flex;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  overflow-x: auto;
-  padding-bottom: var(--space-xs);
-  -webkit-overflow-scrolling: touch;
-}
-
-.category-strip::-webkit-scrollbar {
-  height: 0;
-}
-
-.chip {
-  padding: 6px 18px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  background: var(--color-bg);
-  color: var(--color-ink);
-  font-size: var(--font-body-size);
-  font-family: var(--font-family);
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: all var(--duration-fast) var(--ease-standard);
-}
-
-.chip:hover {
-  border-color: var(--color-primary);
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
   color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast), color var(--duration-fast);
 }
+.section-more:hover { background: var(--color-primary); color: #fff; }
 
-.chip.active {
-  background: var(--color-primary);
-  color: var(--color-primary-text);
-  border-color: var(--color-primary);
-}
-
-/* ── Product Grid ── */
-.item-grid {
+/* ── Goods Grid ── */
+.goods-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-lg);
-}
-
-/* ── Card ── */
-.item-card {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  cursor: pointer;
-  transition: box-shadow var(--duration-normal) var(--ease-standard),
-              transform var(--duration-normal) var(--ease-standard);
-}
-
-.item-card:hover {
-  box-shadow: var(--shadow-ambient-low);
-  transform: translateY(-2px);
-}
-
-.item-card:focus-visible {
-  box-shadow: var(--focus-ring);
-}
-
-.card-image-wrap {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  background: var(--color-surface);
-}
-
-.card-image {
-  width: 100%;
-  height: 100%;
-}
-
-.card-image-fallback {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-surface);
-  color: var(--color-muted);
-}
-
-.fallback-icon {
-  width: 48px;
-  height: 48px;
-}
-
-.card-category {
-  position: absolute;
-  top: var(--space-sm);
-  left: var(--space-sm);
-  padding: 3px 10px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(4px);
-  border-radius: var(--radius-full);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--color-accent);
-}
-
-.card-body {
-  padding: var(--space-md);
-}
-
-.card-title {
-  font-size: var(--font-body-size);
-  font-weight: 600;
-  color: var(--color-ink);
-  margin-bottom: var(--space-sm);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.4;
-}
-
-.card-price-row {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
-}
-
-.card-price {
-  font-size: 1.1875rem;
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
-.card-original {
-  font-size: var(--font-label-size);
-  color: var(--color-muted);
-  text-decoration: line-through;
-}
-
-.card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: var(--font-label-size);
-  color: var(--color-muted);
-}
-
-.card-seller {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.card-views {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  flex-shrink: 0;
-}
-
-.views-icon {
-  width: 14px;
-  height: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--space-md);
 }
 
 /* ── Skeleton ── */
@@ -489,125 +285,78 @@ onMounted(fetchItems)
   border-radius: var(--radius-md);
   overflow: hidden;
 }
-
-.skeleton-image {
-  aspect-ratio: 4 / 3;
+.skeleton-img {
+  aspect-ratio: 4/3;
   background: var(--color-surface);
   animation: shimmer 1.5s infinite;
 }
-
-.skeleton-body {
-  padding: var(--space-md);
-}
-
+.skeleton-lines { padding: 12px; }
 .skeleton-line {
-  height: 14px;
-  background: var(--color-surface);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-sm);
+  height: 12px; background: var(--color-surface);
+  border-radius: var(--radius-sm); margin-bottom: 8px;
   animation: shimmer 1.5s infinite;
 }
-
 .skeleton-line.w-80 { width: 80%; }
-.skeleton-line.w-60 { width: 60%; }
-.skeleton-line.w-40 { width: 40%; }
-.skeleton-line.short { margin-bottom: 0; }
+.skeleton-line.w-40 { width: 40%; margin-bottom: 0; }
 
 @keyframes shimmer {
-  0%   { opacity: 1; }
-  50%  { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
 }
 
-/* ── Empty State ── */
-.empty-state {
-  text-align: center;
-  padding: var(--space-xxl) var(--space-lg);
+/* ── Empty ── */
+.empty-mini {
+  text-align: center; padding: var(--space-xxl) var(--space-lg);
+  color: var(--color-muted); font-size: var(--font-body-size);
 }
 
-.empty-illustration {
-  margin-bottom: var(--space-lg);
+/* ── LostFound Mini ── */
+.lostfound-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-md);
 }
-
-.empty-illustration svg {
-  width: 120px;
-  height: 120px;
-}
-
-.empty-title {
-  font-size: var(--font-headline-size);
-  font-weight: var(--font-headline-weight);
-  color: var(--color-ink);
-  margin-bottom: var(--space-sm);
-}
-
-.empty-desc {
-  color: var(--color-muted);
-  margin-bottom: var(--space-lg);
-  font-size: var(--font-body-size);
-}
-
-/* ── Primary Button (used in empty state) ── */
-.btn-primary {
-  padding: 10px 28px;
-  background: var(--color-primary);
-  color: var(--color-primary-text);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-body-size);
-  font-weight: 500;
-  font-family: var(--font-family);
-  cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-standard);
-}
-
-.btn-primary:hover {
-  background: var(--color-primary-hover);
-}
-
-/* ── Pagination ── */
-.pagination-wrap {
-  margin-top: var(--space-xl);
+.lostfound-mini-card {
   display: flex;
-  justify-content: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--color-ink);
+  transition: box-shadow var(--duration-normal);
+}
+.lostfound-mini-card:hover { box-shadow: var(--shadow-ambient-low); }
+.lostfound-mini-card img {
+  width: 120px; min-height: 100%; object-fit: cover; flex-shrink: 0;
+  background: var(--color-surface);
+}
+.lf-body {
+  padding: 12px; display: flex; flex-direction: column; flex: 1;
+}
+.lf-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 8px; margin-bottom: auto;
+}
+.lf-header h6 {
+  font-size: 0.875rem; font-weight: 600; margin: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.lf-badge {
+  font-size: 0.6875rem; padding: 2px 8px; border-radius: var(--radius-sm);
+  white-space: nowrap; flex-shrink: 0;
+}
+.lf-badge.open { background: var(--color-success-light); color: var(--color-success); }
+.lf-badge.closed { background: var(--color-surface); color: var(--color-muted); }
+.lf-location {
+  display: flex; align-items: center; gap: 4px;
+  color: var(--color-muted); font-size: 0.75rem; margin-top: 6px;
 }
 
 /* ── Responsive ── */
 @media (max-width: 640px) {
-  .search-inner {
-    padding: var(--space-md);
-  }
-
-  .search-filters {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filter-group {
-    justify-content: space-between;
-  }
-
-  .price-input {
-    flex: 1;
-    width: auto;
-  }
-
-  .btn-search {
-    margin-left: 0;
-    text-align: center;
-  }
-
-  .item-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--space-md);
-  }
-
-  .card-body {
-    padding: var(--space-sm);
-  }
-
-  .card-price {
-    font-size: 1rem;
-  }
+  .goods-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .lostfound-mini-grid { grid-template-columns: 1fr; }
+  .lostfound-mini-card img { width: 100px; }
+  .section { margin-bottom: var(--space-md); }
 }
 </style>

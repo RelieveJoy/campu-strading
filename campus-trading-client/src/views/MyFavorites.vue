@@ -84,7 +84,7 @@ onMounted(fetchFavorites)
 </script>
 
 <style scoped>
-.fav-page { max-width: 1100px; margin: 0 auto; }
+.fav-page { max-width: 1100px; margin: 0 auto; padding: var(--space-lg); }
 
 .page-header { display: flex; align-items: baseline; gap: var(--space-md); margin-bottom: var(--space-lg); }
 .page-header h1 { font-size: var(--font-display-size); font-weight: var(--font-display-weight); color: var(--color-ink); }

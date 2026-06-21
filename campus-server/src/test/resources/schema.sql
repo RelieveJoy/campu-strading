@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS message;
 DROP TABLE IF EXISTS favorite;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS item;
@@ -77,4 +78,15 @@ CREATE TABLE favorite (
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (favorite_id),
     UNIQUE KEY uk_user_item (user_id, item_id)
+);
+
+CREATE TABLE message (
+    message_id  BIGINT   NOT NULL AUTO_INCREMENT,
+    item_id     BIGINT   NOT NULL,
+    sender_id   BIGINT   NOT NULL,
+    receiver_id BIGINT   NOT NULL,
+    content     TEXT     NOT NULL,
+    is_read     TINYINT  DEFAULT 0,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (message_id)
 );

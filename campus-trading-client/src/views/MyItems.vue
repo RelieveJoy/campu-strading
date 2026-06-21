@@ -99,7 +99,7 @@ onMounted(fetchItems)
 </script>
 
 <style scoped>
-.list-page { max-width: 900px; margin: 0 auto; }
+.list-page { max-width: 900px; margin: 0 auto; padding: var(--space-lg); }
 
 .page-header {
   display: flex; align-items: baseline; gap: var(--space-md);

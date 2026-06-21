@@ -179,7 +179,7 @@ onMounted(initPage)
 </script>
 
 <style scoped>
-.publish-page {
+.publish-page { max-width: 800px; margin: 0 auto; padding: var(--space-lg);
   max-width: 680px;
   margin: 0 auto;
 }

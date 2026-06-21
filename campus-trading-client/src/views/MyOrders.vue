@@ -113,7 +113,7 @@ onMounted(fetchOrders)
 </script>
 
 <style scoped>
-.orders-page { max-width: 800px; margin: 0 auto; }
+.orders-page { max-width: 800px; margin: 0 auto; padding: var(--space-lg); }
 
 .page-header { margin-bottom: var(--space-lg); }
 .page-header h1 { font-size: var(--font-display-size); font-weight: var(--font-display-weight); color: var(--color-ink); }
