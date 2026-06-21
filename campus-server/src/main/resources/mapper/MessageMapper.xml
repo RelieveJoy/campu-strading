@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.mapper.MessageMapper">
+
+    <!-- 查某个商品下两个用户之间的聊天记录 -->
+    <select id="listByItemId" resultType="com.campus.vo.MessageVO">
+        select m.message_id, m.item_id, m.sender_id,
+               u.username as sender_name,
+               m.content, m.is_read, m.create_time
+        from message m
+        left join user u on m.sender_id = u.user_id
+        where m.item_id = #{itemId}
+          and ((m.sender_id = #{userId} and m.receiver_id = #{otherId})
+            or (m.sender_id = #{otherId} and m.receiver_id = #{userId}))
+        order by m.create_time asc
+    </select>
+
+    <!-- 查当前用户参与的所有对话列表 -->
+    <select id="listConversations" resultType="com.campus.vo.ConversationVO">
+        select t.item_id,
+               i.title     as item_title,
+               i.image_url as item_image,
+               t.other_user_id,
+               u.username  as other_user_name,
+               t.last_content,
+               t.last_time,
+               t.unread_count
+        from (
+            select m.item_id,
+                   case when m.sender_id = #{userId}
+                        then m.receiver_id
+                        else m.sender_id
+                   end as other_user_id,
+                   substring_index(
+                       group_concat(m.content order by m.create_time desc separator '|||'),
+                       '|||', 1
+                   ) as last_content,
+                   max(m.create_time) as last_time,
+                   sum(case when m.receiver_id = #{userId} and m.is_read = 0
+                        then 1 else 0 end
+                   ) as unread_count
+            from message m
+            where m.sender_id = #{userId}
+               or m.receiver_id = #{userId}
+            group by m.item_id, other_user_id
+        ) t
+        left join item i on i.item_id = t.item_id
+        left join user u on u.user_id = t.other_user_id
+        order by t.last_time desc
+    </select>
+
+</mapper>
