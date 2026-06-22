@@ -11,6 +11,7 @@
             <if test="price != null">price = #{price},</if>
             <if test="originalPrice != null">original_price = #{originalPrice},</if>
             <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="itemCondition != null">item_condition = #{itemCondition},</if>
             <if test="imageUrl != null">image_url = #{imageUrl},</if>
             <if test="status != null">status = #{status},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
@@ -28,10 +29,13 @@
         left join category c on i.category_id = c.category_id
         <where>
             <if test="keyword != null and keyword != ''">
-                and i.title like concat('%', #{keyword}, '%')
+                and match(i.title, i.description) against(#{keyword} in natural language mode)
             </if>
             <if test="categoryId != null">
                 and i.category_id = #{categoryId}
+            </if>
+            <if test="itemCondition != null">
+                and i.item_condition = #{itemCondition}
             </if>
             <if test="status != null">
                 and i.status = #{status}
@@ -43,12 +47,25 @@
                 and i.price &lt;= #{maxPrice}
             </if>
         </where>
-        order by i.create_time desc
+        <choose>
+            <when test="sort == 'hottest'">
+                order by i.view_count desc, i.create_time desc
+            </when>
+            <when test="sort == 'price_asc'">
+                order by i.price asc, i.create_time desc
+            </when>
+            <when test="sort == 'price_desc'">
+                order by i.price desc, i.create_time desc
+            </when>
+            <otherwise>
+                order by i.create_time desc
+            </otherwise>
+        </choose>
     </select>
 
     <select id="getDetailById" resultType="com.campus.vo.ItemDetailVO">
         select i.item_id, i.title, i.description, i.price, i.original_price,
-               i.category_id, i.image_url, i.view_count, i.status, i.create_time,
+               i.category_id, i.image_url, i.view_count, i.status, i.item_condition, i.create_time,
                i.seller_id, u.username as seller_name, u.phone as seller_phone,
                c.name as category_name
         from item i

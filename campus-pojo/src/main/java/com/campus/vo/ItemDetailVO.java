@@ -44,6 +44,9 @@ public class ItemDetailVO implements Serializable {
     @Schema(description = "浏览量")
     private Integer viewCount;
 
+    @Schema(description = "成色")
+    private Integer itemCondition;
+
     @Schema(description = "状态：1在售 0下架 2已售出")
     private Integer status;
 

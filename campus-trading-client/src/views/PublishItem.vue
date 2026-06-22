@@ -58,6 +58,17 @@
           </div>
           <span class="field-error" v-if="errors.categoryId">{{ errors.categoryId }}</span>
         </div>
+
+        <div class="field">
+          <label class="field-label">成色</label>
+          <div class="category-chips">
+            <button v-for="c in conditionList" :key="c.value" type="button"
+              class="cat-chip" :class="{ active: form.itemCondition === c.value }"
+              @click="form.itemCondition = c.value">
+              {{ c.label }}
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="form-section">
@@ -106,16 +117,25 @@ const loading = ref(false)
 const isEdit = ref(route.name === 'EditItem')
 
 const categories = [
-  { label: '教材', value: 1 },
-  { label: '电子产品', value: 2 },
+  { label: '书籍教材', value: 1 },
+  { label: '数码电子', value: 2 },
   { label: '生活用品', value: 3 },
-  { label: '衣物鞋包', value: 4 },
-  { label: '运动户外', value: 5 },
-  { label: '其他', value: 6 },
+  { label: '服装鞋帽', value: 4 },
+  { label: '运动健身', value: 5 },
+  { label: '美妆护肤', value: 6 },
+  { label: '游戏娱乐', value: 7 },
+  { label: '其他闲置', value: 8 },
+]
+
+const conditionList = [
+  { label: '全新', value: 1 },
+  { label: '九成新', value: 2 },
+  { label: '七成新', value: 3 },
+  { label: '五成新', value: 4 },
 ]
 
 const form = reactive({
-  title: '', description: '', price: null, originalPrice: null, categoryId: null, imageUrl: ''
+  title: '', description: '', price: null, originalPrice: null, categoryId: null, itemCondition: null, imageUrl: ''
 })
 
 const errors = reactive({ title: '', price: '', categoryId: '' })
@@ -168,6 +188,7 @@ async function initPage() {
         price: res.data.price,
         originalPrice: res.data.originalPrice,
         categoryId: res.data.categoryId,
+        itemCondition: res.data.itemCondition || null,
         imageUrl: res.data.imageUrl || '',
       })
     } catch (e) { ElMessage.error('商品不存在'); router.push('/') }

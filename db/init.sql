@@ -29,11 +29,14 @@ CREATE TABLE IF NOT EXISTS category (
     PRIMARY KEY (category_id)
 ) ENGINE=InnoDB;
 
-INSERT IGNORE INTO category VALUES (1,'教材书籍',1,1,NOW(),NOW(),NULL,NULL);
-INSERT IGNORE INTO category VALUES (2,'电子产品',2,1,NOW(),NOW(),NULL,NULL);
+INSERT IGNORE INTO category VALUES (1,'书籍教材',1,1,NOW(),NOW(),NULL,NULL);
+INSERT IGNORE INTO category VALUES (2,'数码电子',2,1,NOW(),NOW(),NULL,NULL);
 INSERT IGNORE INTO category VALUES (3,'生活用品',3,1,NOW(),NOW(),NULL,NULL);
-INSERT IGNORE INTO category VALUES (4,'衣物鞋帽',4,1,NOW(),NOW(),NULL,NULL);
-INSERT IGNORE INTO category VALUES (5,'运动器材',5,1,NOW(),NOW(),NULL,NULL);
+INSERT IGNORE INTO category VALUES (4,'服装鞋帽',4,1,NOW(),NOW(),NULL,NULL);
+INSERT IGNORE INTO category VALUES (5,'运动健身',5,1,NOW(),NOW(),NULL,NULL);
+INSERT IGNORE INTO category VALUES (6,'美妆护肤',6,1,NOW(),NOW(),NULL,NULL);
+INSERT IGNORE INTO category VALUES (7,'游戏娱乐',7,1,NOW(),NOW(),NULL,NULL);
+INSERT IGNORE INTO category VALUES (8,'其他闲置',8,1,NOW(),NOW(),NULL,NULL);
 
 CREATE TABLE IF NOT EXISTS item (
     item_id        BIGINT         NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -44,6 +47,7 @@ CREATE TABLE IF NOT EXISTS item (
     original_price DECIMAL(10,2)  DEFAULT NULL COMMENT '原价',
     category_id    BIGINT         DEFAULT NULL COMMENT '分类ID',
     status         TINYINT        DEFAULT 1 COMMENT '状态 1在售 0下架 2已售出',
+    item_condition TINYINT        DEFAULT NULL COMMENT '1全新 2九成新 3七成新 4五成新',
     image_url      VARCHAR(500)   DEFAULT NULL COMMENT '图片URL',
     view_count     INT            DEFAULT 0 COMMENT '浏览量',
     create_time    DATETIME       DEFAULT CURRENT_TIMESTAMP,
@@ -52,7 +56,8 @@ CREATE TABLE IF NOT EXISTS item (
     update_user    BIGINT         DEFAULT NULL,
     PRIMARY KEY (item_id),
     KEY idx_seller (seller_id),
-    KEY idx_category (category_id)
+    KEY idx_category (category_id),
+    FULLTEXT KEY ft_title_desc (title, description)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS orders (

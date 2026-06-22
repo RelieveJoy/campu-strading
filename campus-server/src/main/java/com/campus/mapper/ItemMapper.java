@@ -16,9 +16,9 @@ import java.util.List;
 @Mapper
 public interface ItemMapper {
 
-    @Insert("insert into item(seller_id, title, description, price, original_price, category_id, status, image_url, view_count, create_time, update_time, create_user, update_user) " +
+    @Insert("insert into item(seller_id, title, description, price, original_price, category_id, status, item_condition, image_url, view_count, create_time, update_time, create_user, update_user) " +
             "values " +
-            "(#{sellerId}, #{title}, #{description}, #{price}, #{originalPrice}, #{categoryId}, #{status}, #{imageUrl}, #{viewCount}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+            "(#{sellerId}, #{title}, #{description}, #{price}, #{originalPrice}, #{categoryId}, #{status}, #{itemCondition}, #{imageUrl}, #{viewCount}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
     @AutoFill(OperationType.INSERT)
     void insert(Item item);
 

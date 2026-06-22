@@ -25,6 +25,7 @@ public class Item implements Serializable {
     private BigDecimal originalPrice;
     private Long categoryId;
     private Integer status;
+    private Integer itemCondition;
     private String imageUrl;
     private Integer viewCount;
     private LocalDateTime createTime;

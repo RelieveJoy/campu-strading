@@ -21,8 +21,8 @@ defineProps({
   categories: {
     type: Array,
     default: () => [
-      { id: 1,  name: '数码电子', icon: 'bi bi-phone' },
-      { id: 2,  name: '书籍教材', icon: 'bi bi-book' },
+      { id: 1,  name: '书籍教材', icon: 'bi bi-book' },
+      { id: 2,  name: '数码电子', icon: 'bi bi-phone' },
       { id: 3,  name: '生活用品', icon: 'bi bi-house-heart' },
       { id: 4,  name: '服装鞋帽', icon: 'bi bi-bag' },
       { id: 5,  name: '运动健身', icon: 'bi bi-bicycle' },

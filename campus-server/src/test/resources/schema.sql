@@ -49,6 +49,7 @@ CREATE TABLE item (
     original_price DECIMAL(10,2)  DEFAULT NULL,
     category_id    BIGINT         DEFAULT NULL,
     status         TINYINT        DEFAULT 1,
+    item_condition TINYINT        DEFAULT NULL,
     image_url      VARCHAR(500)   DEFAULT NULL,
     view_count     INT            DEFAULT 0,
     create_time    TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,

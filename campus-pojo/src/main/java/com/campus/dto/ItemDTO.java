@@ -47,6 +47,9 @@ public class ItemDTO implements Serializable {
     @Schema(description = "商品图片URL")
     private String imageUrl;
 
+    @Schema(description = "成色：1全新 2九成新 3七成新 4五成新")
+    private Integer itemCondition;
+
     @Schema(description = "状态：1在售 0下架 2已售出")
     private Integer status;
 

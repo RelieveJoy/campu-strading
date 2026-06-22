@@ -20,7 +20,11 @@
             <span class="result-count">
               共 <strong>{{ total }}</strong> 件商品
             </span>
-            <div class="sort-group">
+            <div class="header-right">
+              <label class="sold-toggle">
+                <input type="checkbox" v-model="showSold" @change="onToggleSold" />
+                <span>显示已售出</span>
+              </label>
               <span class="sort-label">排序：</span>
               <div class="sort-btns">
                 <button
@@ -95,7 +99,8 @@ const activeSort = ref('newest')
 const minPrice = ref(null)
 const maxPrice = ref(null)
 const page = ref(1)
-const pageSize = 12
+const pageSize = 8
+const showSold = ref(false)
 
 const sorts = [
   { value: 'newest', label: '最新' },
@@ -115,9 +120,10 @@ async function fetchItems() {
     const params = { page: page.value, pageSize, sort: activeSort.value }
     if (route.query.q) params.keyword = route.query.q
     if (activeCategory.value) params.categoryId = activeCategory.value
-    if (activeCondition.value) params.condition = activeCondition.value
+    if (activeCondition.value) params.itemCondition = activeCondition.value
     if (minPrice.value != null) params.minPrice = minPrice.value
     if (maxPrice.value != null) params.maxPrice = maxPrice.value
+    if (!showSold.value) params.status = 1  // 默认只显示在售
     const res = await getItems(params)
     items.value = (res?.data?.records || []).map(normalize)
     total.value = res?.data?.total || 0
@@ -143,6 +149,7 @@ function onCategory(cat) { activeCategory.value = cat; page.value = 1; router.re
 function onCondition(cond) { activeCondition.value = cond; page.value = 1; fetchItems() }
 function onPrice({ min, max }) { minPrice.value = min || null; maxPrice.value = max || null; page.value = 1; fetchItems() }
 function onSort(sort) { activeSort.value = sort; page.value = 1; fetchItems() }
+function onToggleSold() { page.value = 1; fetchItems() }
 function onPage(p) { page.value = p; fetchItems(); window.scrollTo({ top: 0, behavior: 'smooth' }) }
 
 onMounted(() => {
