@@ -15,6 +15,7 @@ import com.campus.mapper.OrderMapper;
 import com.campus.mapper.UserMapper;
 import com.campus.mq.NotificationProducer;
 import com.campus.result.PageResult;
+import com.campus.es.ItemSearchService;
 import com.campus.service.OrderService;
 import com.campus.vo.OrderVO;
 import com.github.pagehelper.Page;
@@ -38,6 +39,8 @@ public class OrderServiceImpl implements OrderService {
     private UserMapper userMapper;
     @Autowired
     private NotificationProducer notificationProducer;
+    @Autowired
+    private ItemSearchService itemSearchService;
 
     @Override
     @Transactional
@@ -66,6 +69,9 @@ public class OrderServiceImpl implements OrderService {
                 .status(Orders.TO_BE_CONFIRMED)
                 .build();
         orderMapper.insert(order);
+
+        // ES 同步：商品已售
+        itemSearchService.index(item);
 
         // 发送通知：有人买了你的商品
         sendNotification(order, item.getTitle(), "CREATED");
@@ -112,6 +118,9 @@ public class OrderServiceImpl implements OrderService {
         Item item = itemMapper.getById(order.getItemId());
         item.setStatus(1);
         itemMapper.update(item);
+
+        // ES 同步：商品恢复在售
+        itemSearchService.index(item);
 
         // 发送通知：订单已取消
         sendNotification(order, item.getTitle(), "CANCELLED");

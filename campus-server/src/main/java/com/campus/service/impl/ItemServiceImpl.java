@@ -2,6 +2,7 @@ package com.campus.service.impl;
 
 import com.campus.annotation.CacheInvalidate;
 import com.campus.constant.MessageConstant;
+import com.campus.es.ItemSearchService;
 import com.campus.context.BaseContext;
 import com.campus.dto.ItemDTO;
 import com.campus.dto.ItemPageQueryDTO;
@@ -30,6 +31,8 @@ public class ItemServiceImpl implements ItemService {
     private ItemMapper itemMapper;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private ItemSearchService itemSearchService;
 
     @Override
     @CacheInvalidate
@@ -40,6 +43,7 @@ public class ItemServiceImpl implements ItemService {
         item.setStatus(1);
         item.setViewCount(0);
         itemMapper.insert(item);
+        itemSearchService.index(item);
     }
 
     @Override
@@ -55,6 +59,7 @@ public class ItemServiceImpl implements ItemService {
         BeanUtils.copyProperties(itemDTO, item);
         item.setItemId(itemId);
         itemMapper.update(item);
+        itemSearchService.index(item);
     }
 
     @Override
@@ -69,6 +74,7 @@ public class ItemServiceImpl implements ItemService {
         }
         item.setStatus(0);
         itemMapper.update(item);
+        itemSearchService.index(item);
     }
 
     @Override
@@ -86,10 +92,22 @@ public class ItemServiceImpl implements ItemService {
         }
         item.setStatus(1);
         itemMapper.update(item);
+        itemSearchService.index(item);
     }
 
     @Override
     public PageResult pageQuery(ItemPageQueryDTO dto) {
+        // 有关键词时优先 ES 搜索
+        if (itemSearchService != null && dto.getKeyword() != null && !dto.getKeyword().isBlank()) {
+            List<Long> esIds = itemSearchService.search(dto);
+            if (!esIds.isEmpty()) {
+                PageHelper.startPage(dto.getPage(), dto.getPageSize());
+                List<ItemVO> list = itemMapper.pageQueryByIds(esIds, dto);
+                Page<ItemVO> page = (Page<ItemVO>) list;
+                return new PageResult(page.getTotal(), page.getResult());
+            }
+        }
+        // 无关键词或 ES 不可用时走 MySQL
         PageHelper.startPage(dto.getPage(), dto.getPageSize());
         List<ItemVO> list = itemMapper.pageQuery(dto);
         Page<ItemVO> page = (Page<ItemVO>) list;

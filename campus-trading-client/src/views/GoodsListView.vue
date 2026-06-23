@@ -154,7 +154,12 @@ function onPage(p) { page.value = p; fetchItems(); window.scrollTo({ top: 0, beh
 
 onMounted(() => {
   if (route.query.category) activeCategory.value = route.query.category
-  if (route.query.q) { /* keyword从route获取 */ }
+  fetchItems()
+})
+
+// 搜索关键字变化时自动重新查询
+watch(() => route.query.q, () => {
+  page.value = 1
   fetchItems()
 })
 </script>

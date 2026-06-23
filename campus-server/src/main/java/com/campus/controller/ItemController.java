@@ -2,6 +2,7 @@ package com.campus.controller;
 
 import com.campus.dto.ItemDTO;
 import com.campus.dto.ItemPageQueryDTO;
+import com.campus.es.ItemSearchService;
 import com.campus.result.PageResult;
 import com.campus.result.Result;
 import com.campus.service.ItemService;
@@ -27,6 +28,8 @@ public class ItemController {
     private ItemService itemService;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private ItemSearchService itemSearchService;
 
     @Operation(summary = "发布商品")
     @PostMapping
@@ -83,5 +86,13 @@ public class ItemController {
         stringRedisTemplate.opsForValue().increment("view_count:" + id);
         ItemDetailVO detail = itemService.getById(id);
         return Result.success(detail);
+    }
+
+    @Operation(summary = "全量同步商品到 ES")
+    @PostMapping("/es/reindex")
+    public Result<String> reindex() {
+        if (itemSearchService == null) return Result.error("ES 未启用");
+        itemSearchService.indexAll();
+        return Result.success("全量索引已触发，查看后端日志确认");
     }
 }

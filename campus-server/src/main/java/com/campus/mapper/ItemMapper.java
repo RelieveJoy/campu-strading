@@ -11,6 +11,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 @Mapper
@@ -26,6 +28,9 @@ public interface ItemMapper {
     void update(Item item);
 
     List<ItemVO> pageQuery(ItemPageQueryDTO dto);
+
+    /** 用 ES 返回的 ID 列表 + 其他筛选条件查 */
+    List<ItemVO> pageQueryByIds(@Param("ids") List<Long> ids, @Param("dto") ItemPageQueryDTO dto);
 
     @Select("select * from item where item_id = #{itemId}")
     Item getById(Long itemId);

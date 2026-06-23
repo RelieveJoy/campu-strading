@@ -22,7 +22,7 @@
 
     <select id="pageQuery" resultType="com.campus.vo.ItemVO">
         select i.item_id, i.title, i.price, i.original_price, i.image_url,
-               i.view_count, i.status, i.create_time,
+               i.view_count, i.status, i.item_condition, i.create_time,
                u.username as seller_name, c.name as category_name
         from item i
         left join user u on i.seller_id = u.user_id
@@ -55,6 +55,48 @@
                 order by i.price asc, i.create_time desc
             </when>
             <when test="sort == 'price_desc'">
+                order by i.price desc, i.create_time desc
+            </when>
+            <otherwise>
+                order by i.create_time desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="pageQueryByIds" resultType="com.campus.vo.ItemVO">
+        select i.item_id, i.title, i.price, i.original_price, i.image_url,
+               i.view_count, i.status, i.item_condition, i.create_time,
+               u.username as seller_name, c.name as category_name
+        from item i
+        left join user u on i.seller_id = u.user_id
+        left join category c on i.category_id = c.category_id
+        where i.item_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        <if test="dto.categoryId != null">
+            and i.category_id = #{dto.categoryId}
+        </if>
+        <if test="dto.status != null">
+            and i.status = #{dto.status}
+        </if>
+        <if test="dto.itemCondition != null">
+            and i.item_condition = #{dto.itemCondition}
+        </if>
+        <if test="dto.minPrice != null">
+            and i.price &gt;= #{dto.minPrice}
+        </if>
+        <if test="dto.maxPrice != null">
+            and i.price &lt;= #{dto.maxPrice}
+        </if>
+        <choose>
+            <when test="dto.sort == 'hottest'">
+                order by i.view_count desc, i.create_time desc
+            </when>
+            <when test="dto.sort == 'price_asc'">
+                order by i.price asc, i.create_time desc
+            </when>
+            <when test="dto.sort == 'price_desc'">
                 order by i.price desc, i.create_time desc
             </when>
             <otherwise>
