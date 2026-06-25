@@ -329,19 +329,56 @@
         <template v-if="currentView === 'security'">
           <div class="user-main">
             <h3 class="section-title">账号与安全</h3>
-            <div class="settings-section">
-              <div class="settings-title">安全中心</div>
-              <div class="settings-row">
-                <span class="settings-label">修改密码</span>
-                <span class="settings-value">
-                  <button class="settings-btn" @click="showPwdDialog = true">修改</button>
-                </span>
+
+            <div class="account-block">
+              <div class="account-block-title">基本信息</div>
+              <div class="account-row">
+                <span class="ac-label">会员名</span>
+                <span class="ac-val strong">{{ profile?.username }}</span>
               </div>
-              <div class="settings-row">
-                <span class="settings-label">退出登录</span>
-                <span class="settings-value">
-                  <button class="settings-btn danger" @click="handleLogout">退出</button>
-                </span>
+              <div class="account-row">
+                <span class="ac-label">学号</span>
+                <span class="ac-val">{{ studentId || '未绑定' }}</span>
+              </div>
+              <div class="account-row">
+                <span class="ac-label">手机号</span>
+                <span class="ac-val">{{ phone || '未绑定' }}</span>
+              </div>
+            </div>
+
+            <div class="account-block">
+              <div class="account-block-title">认证信息</div>
+              <div class="account-row">
+                <span class="ac-label">学生认证</span>
+                <span class="ac-val">校园交易平台学生身份</span>
+                <span class="ac-status success">已认证</span>
+              </div>
+              <div class="account-row">
+                <span class="ac-label">手机绑定</span>
+                <span class="ac-val">{{ phone ? '已绑定手机号 ' + phone : '绑定手机以保障账户安全' }}</span>
+                <span class="ac-status" :class="phone ? 'success' : 'muted'">{{ phone ? '已绑定' : '未绑定' }}</span>
+              </div>
+            </div>
+
+            <div class="account-block">
+              <div class="account-block-title">安全中心</div>
+              <div class="account-row">
+                <span class="ac-label">安全中心</span>
+                <span class="ac-val">学习账户保护、交易安全等相关知识</span>
+                <span class="ac-link">查看 &gt;</span>
+              </div>
+              <div class="account-row">
+                <span class="ac-label">修改密码</span>
+                <span class="ac-val">定期修改密码保护账户安全</span>
+                <span class="ac-link" @click="showPwdDialog = true">修改 &gt;</span>
+              </div>
+            </div>
+
+            <div class="account-block">
+              <div class="account-row">
+                <span class="ac-label">退出登录</span>
+                <span class="ac-val">退出当前登录的账户</span>
+                <span class="ac-link danger" @click="handleLogout">退出 &gt;</span>
               </div>
             </div>
           </div>
@@ -381,9 +418,10 @@ import { getFavorites } from '../api/favorite'
 import GoodsCard from '../components/GoodsCard.vue'
 import RatingStars from '../components/RatingStars.vue'
 
-const myId = (() => {
-  try { return JSON.parse(localStorage.getItem('user'))?.id } catch { return 0 }
-})()
+const userData = JSON.parse(localStorage.getItem('user') || '{}')
+const myId = userData.id || 0
+const studentId = userData.studentId || ''
+const phone = userData.phone || ''
 
 const currentView = ref('home')   // home | items | sold | bought | favorites
 const homeTab = ref('items')      // items | reviews
@@ -805,7 +843,24 @@ onMounted(() => {
 .bs-2 { background: var(--color-success-light); color: var(--color-success); }
 .bs-3 { background: var(--color-surface); color: var(--color-muted); }
 
-/* ── Settings ── */
+/* ── Account & Settings ── */
+.account-block { margin-bottom: 8px; }
+.account-block-title { font-size: 0.8125rem; font-weight: 600; color: var(--color-muted); padding: 16px 0 8px; }
+.account-row {
+  display: flex; align-items: center; padding: 14px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+.account-row:last-child { border-bottom: none; }
+.ac-label { width: 100px; flex-shrink: 0; font-size: 0.9375rem; color: var(--color-ink); }
+.ac-val { flex: 1; font-size: 0.8125rem; color: var(--color-muted); margin-right: 12px; }
+.ac-val.strong { font-weight: 600; color: var(--color-ink); font-size: 0.9375rem; }
+.ac-status { font-size: 0.8125rem; flex-shrink: 0; }
+.ac-status.success { color: var(--color-success); }
+.ac-status.muted { color: var(--color-muted); }
+.ac-link { font-size: 0.8125rem; color: var(--color-primary); cursor: pointer; flex-shrink: 0; white-space: nowrap; }
+.ac-link:hover { text-decoration: underline; }
+.ac-link.danger { color: var(--color-danger); }
+
 .settings-section { margin-bottom: 24px; }
 .settings-title { font-size: 0.875rem; font-weight: 600; color: var(--color-muted); padding: 12px 0 8px; border-bottom: 1px solid var(--color-divider); margin-bottom: 8px; }
 .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-divider); }
@@ -819,11 +874,7 @@ onMounted(() => {
 .settings-link { background: none; border: none; color: var(--color-primary); font-size: 0.8125rem; font-family: var(--font-family); cursor: pointer; margin-left: 12px; padding: 0; }
 .settings-link:hover { text-decoration: underline; }
 .settings-link.cancel { color: var(--color-muted); }
-.settings-hint { color: var(--color-muted); }
-.settings-btn { padding: 4px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bg); color: var(--color-primary); font-size: 0.8125rem; font-family: var(--font-family); cursor: pointer; transition: all var(--duration-fast); }
-.settings-btn:hover { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
-.settings-btn.danger { color: var(--color-danger); border-color: var(--color-danger); }
-.settings-btn.danger:hover { background: var(--color-danger); color: #fff; }
+.settings-hint { color: var(--color-muted); font-size: 0.8125rem; }
 
 @media (max-width: 768px) {
   .user-layout { grid-template-columns: 1fr; }

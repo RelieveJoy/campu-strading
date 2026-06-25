@@ -39,20 +39,20 @@
 
           <!-- 已登录 -->
           <template v-else>
-            <div class="user-menu" ref="menuRef">
-              <button class="user-trigger" @click="menuOpen = !menuOpen">
+            <div class="user-menu" @mouseenter="menuOpen = true" @mouseleave="menuOpen = false">
+              <button class="user-trigger" @click="goProfile">
                 <span class="user-avatar">{{ userName.charAt(0) }}</span>
                 <span class="user-name">{{ userName }}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" :class="{ rotated: menuOpen }"><polyline points="6 9 12 15 18 9"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <div class="user-dropdown" v-show="menuOpen">
-                <router-link to="/publish" @click="menuOpen = false">发布商品</router-link>
-                <router-link to="/my-items" @click="menuOpen = false">我的商品</router-link>
-                <router-link to="/orders" @click="menuOpen = false">我的订单</router-link>
-                <router-link to="/my-favorites" @click="menuOpen = false">我的收藏</router-link>
-                <router-link to="/messages" @click="menuOpen = false">我的消息</router-link>
-                <router-link to="/profile" @click="menuOpen = false">个人信息</router-link>
-                <router-link to="/stats" @click="menuOpen = false">数据统计</router-link>
+                <router-link to="/publish">发布商品</router-link>
+                <router-link to="/my-items">我的商品</router-link>
+                <router-link to="/orders">我的订单</router-link>
+                <router-link to="/my-favorites">我的收藏</router-link>
+                <router-link to="/messages">我的消息</router-link>
+                <router-link to="/profile">个人信息</router-link>
+                <router-link to="/stats">数据统计</router-link>
                 <hr />
                 <a href="#" @click.prevent="handleLogout">退出登录</a>
               </div>
@@ -148,13 +148,11 @@ async function handleLogout() {
 
 // ── 用户菜单 ──
 const menuOpen = ref(false)
-const menuRef = ref(null)
 
-function closeMenu(e) {
-  if (menuRef.value && !menuRef.value.contains(e.target)) menuOpen.value = false
+function goProfile() {
+  menuOpen.value = false
+  router.push('/profile')
 }
-onMounted(() => document.addEventListener('click', closeMenu))
-onUnmounted(() => document.removeEventListener('click', closeMenu))
 
 // ── 移动端 ──
 const mobileOpen = ref(false)
