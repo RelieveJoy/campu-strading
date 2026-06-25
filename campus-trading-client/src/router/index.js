@@ -23,7 +23,7 @@ const routes = [
       { path: 'my-favorites', name: 'MyFavorites', component: () => import('../views/MyFavorites.vue') },
       { path: 'orders', name: 'MyOrders', component: () => import('../views/MyOrders.vue') },
       { path: 'messages', name: 'MyMessages', component: () => import('../views/MyMessages.vue') },
-      { path: 'user/:id', name: 'UserHome', component: () => import('../views/UserHomeView.vue') },
+      { path: 'user/:id', name: 'UserHome', component: () => import('../views/PublicUserView.vue') },
       { path: 'stats', name: 'Stats', component: () => import('../views/StatsView.vue') },
     ],
   },
