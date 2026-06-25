@@ -37,6 +37,9 @@
               <span>{{ activeTab === 'buy' ? '卖家' : '买家' }}：{{ activeTab === 'buy' ? o.sellerName : o.buyerName }}</span>
               <span>{{ o.createTime }}</span>
             </div>
+            <button v-if="activeTab === 'buy'" class="contact-btn" @click.stop="openChat(o)">
+              <i class="bi bi-chat-dots me-1"></i>联系卖家
+            </button>
           </div>
 
           <span class="order-status" :class="'ostatus-' + o.status">{{ statusMap[o.status] }}</span>
@@ -46,6 +49,11 @@
           <button v-if="activeTab === 'sell'" class="action-btn confirm" @click="handleConfirm(o.orderId)">确认完成</button>
           <button class="action-btn cancel" @click="handleCancel(o.orderId)">取消订单</button>
         </div>
+        <div class="order-actions" v-if="(o.status === 2 || o.status === 3) && activeTab === 'buy'">
+          <button class="action-btn review" :class="{ reviewed: reviewedMap[o.orderId] }" @click="openReview(o)">
+            {{ reviewedMap[o.orderId] ? '修改评价' : '评价' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -53,6 +61,22 @@
       <el-pagination :current-page="page" :page-size="pageSize" :total="total"
         layout="prev, pager, next" @current-change="(p) => { page = p; fetchOrders() }" background />
     </div>
+
+    <RatingModal
+      ref="ratingModalRef"
+      :order-id="reviewOrder.orderId"
+      :item-id="reviewOrder.itemId"
+      :item-title="reviewOrder.itemTitle"
+      :existing-review="reviewExisting"
+      @done="onReviewDone"
+    />
+    <ChatModal
+      ref="chatModalRef"
+      :item-id="chatTarget.itemId"
+      :receiver-id="chatTarget.receiverId"
+      :seller-name="chatTarget.sellerName"
+      :item-title="chatTarget.itemTitle"
+    />
   </div>
 </template>
 
@@ -60,6 +84,9 @@
 import { ref, onMounted, inject, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getOrders, confirmOrder, cancelOrder } from '../api/order'
+import RatingModal from '../components/RatingModal.vue'
+import ChatModal from '../components/ChatModal.vue'
+import { getItemReviews } from '../api/review'
 
 const loggedIn = inject('loggedIn')
 const requireLogin = inject('requireLogin')
@@ -73,6 +100,42 @@ const pageSize = 8
 const user = ref(JSON.parse(localStorage.getItem('user') || '{}'))
 
 const statusMap = { 1: '待确认', 2: '已完成', 3: '已取消' }
+const chatModalRef = ref(null)
+const chatTarget = ref({ itemId: 0, receiverId: 0, sellerName: '', itemTitle: '' })
+const ratingModalRef = ref(null)
+const reviewOrder = ref({ orderId: 0, itemId: 0, itemTitle: '' })
+const reviewExisting = ref(null)  // 已有评价对象（含 reviewId）→ PUT；null → POST
+const reviewedMap = ref({})       // 记录已评价的订单 orderId → reviewObj
+
+function openChat(order) {
+  chatTarget.value = {
+    itemId: order.itemId,
+    receiverId: order.sellerId,
+    sellerName: order.sellerName,
+    itemTitle: order.itemTitle
+  }
+  chatModalRef.value?.open()
+}
+
+function openReview(order) {
+  reviewOrder.value = { orderId: order.orderId, itemId: order.itemId, itemTitle: order.itemTitle }
+  reviewExisting.value = reviewedMap.value[order.orderId] || null
+  ratingModalRef.value?.open(reviewExisting.value)
+}
+
+async function onReviewDone() {
+  // 提交成功后，查评价列表找自己的记录存下 reviewId，下次打开走 PUT
+  try {
+    const res = await getItemReviews(reviewOrder.value.itemId)
+    const myReview = (res.data || []).find(r => r.orderId === reviewOrder.value.orderId)
+    if (myReview) {
+      const obj = { reviewId: myReview.reviewId, rating: myReview.rating, content: myReview.content }
+      reviewedMap.value[reviewOrder.value.orderId] = obj
+      reviewExisting.value = obj
+    }
+  } catch { /* ignore */ }
+  fetchOrders()
+}
 
 function switchTab(tab) { activeTab.value = tab; page.value = 1; fetchOrders() }
 
@@ -199,6 +262,24 @@ onMounted(fetchOrders)
   border: 1px solid var(--color-danger); color: var(--color-danger);
 }
 .action-btn.cancel:hover { background: var(--color-danger); color: white; }
+.action-btn.review {
+  background: var(--color-bg); color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.action-btn.review:hover { background: var(--color-primary); color: #fff; }
+.action-btn.review.reviewed {
+  background: var(--color-success-light); color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.contact-btn {
+  padding: 8px 16px; border: 1px solid var(--color-primary); border-radius: var(--radius-sm);
+  background: var(--color-bg); color: var(--color-primary);
+  font-size: var(--font-label-size); font-weight: 500;
+  font-family: var(--font-family); cursor: pointer;
+  transition: all var(--duration-fast); margin-top: var(--space-sm);
+}
+.contact-btn:hover { background: var(--color-primary); color: #fff; }
 
 .pagination-wrap { margin-top: var(--space-lg); display: flex; justify-content: center; }
 

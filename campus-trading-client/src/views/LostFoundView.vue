@@ -103,7 +103,7 @@ import { getLostFounds } from '../api/lostfound'
 const keyword = ref('')
 const statusFilter = ref('')
 const page = ref(1)
-const pageSize = 12
+const pageSize = 8
 
 const items = ref([])
 const total = ref(0)

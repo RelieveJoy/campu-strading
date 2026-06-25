@@ -75,6 +75,12 @@ services:
       JWT_USER_TTL: ${JWT_USER_TTL:-72000000000}
       JWT_ADMIN_TOKEN_NAME: ${JWT_ADMIN_TOKEN_NAME:-token}
       JWT_USER_TOKEN_NAME: ${JWT_USER_TOKEN_NAME:-authentication}
+      CAMPUS_RABBITMQ_HOST: rabbitmq
+      CAMPUS_RABBITMQ_PORT: 5672
+      CAMPUS_RABBITMQ_USERNAME: ${CAMPUS_RABBITMQ_USERNAME:-admin}
+      CAMPUS_RABBITMQ_PASSWORD: ${CAMPUS_RABBITMQ_PASSWORD:-admin}
+      CAMPUS_ES_HOST: elasticsearch
+      CAMPUS_ES_PORT: 9200
     depends_on:
       mysql:
         condition: service_healthy

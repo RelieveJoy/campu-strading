@@ -59,6 +59,12 @@ public class ItemDetailVO implements Serializable {
     @Schema(description = "卖家手机号")
     private String sellerPhone;
 
+    @Schema(description = "商品平均评分")
+    private BigDecimal averageRating;
+
+    @Schema(description = "有效评分数")
+    private Integer reviewCount;
+
     @Schema(description = "发布时间")
     private LocalDateTime createTime;
 }

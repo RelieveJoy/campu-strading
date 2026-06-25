@@ -166,6 +166,27 @@
             </div>
           </div>
 
+          <!-- 商品评价 -->
+          <div class="section-card" v-if="reviews.length > 0 || detail.reviewCount > 0">
+            <div class="card-header">
+              <h6><i class="bi bi-star me-2"></i>商品评价</h6>
+              <RatingStars v-if="detail.averageRating > 0" :average-rating="detail.averageRating || 0" :review-count="detail.reviewCount || 0" mode="readonly" />
+            </div>
+            <div class="card-body">
+              <div v-if="reviews.length === 0" class="muted-text">暂无评价内容</div>
+              <div v-for="r in reviews" :key="r.reviewId" class="review-item">
+                <div class="review-head">
+                  <span class="review-name">{{ r.reviewerName }}</span>
+                  <span class="review-stars">
+                    <i v-for="i in 5" :key="i" class="bi" :class="i <= r.rating ? 'bi-star-fill' : 'bi-star'" :style="{ color: i <= r.rating ? '#ffb800' : '#ddd', fontSize: '0.75rem' }"></i>
+                  </span>
+                  <span class="review-time">{{ r.createTime }}</span>
+                </div>
+                <p class="review-content" v-if="r.content">{{ r.content }}</p>
+              </div>
+            </div>
+          </div>
+
           <!-- 相关商品 -->
           <div class="related-section" v-if="relatedItems.length">
             <h6 class="related-title"><i class="bi bi-grid me-2"></i>相关商品</h6>
@@ -181,6 +202,15 @@
             <div class="seller-avatar-lg">{{ (detail.sellerName || '?')[0] }}</div>
             <h6 class="seller-name-lg">{{ detail.sellerName }}</h6>
             <p class="seller-dept" v-if="detail.sellerDept">{{ detail.sellerDept }}</p>
+
+            <!-- 商品评分 -->
+            <div class="seller-rating" v-if="detail.averageRating > 0 || detail.reviewCount > 0">
+              <RatingStars
+                :average-rating="detail.averageRating || 0"
+                :review-count="detail.reviewCount || 0"
+                mode="readonly"
+              />
+            </div>
 
             <div class="seller-stats">
               <div class="stat-item">
@@ -223,7 +253,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject } from 'vue'
+import { ref, computed, onMounted, inject, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getItemDetail, getItems } from '../api/item'
@@ -231,6 +261,8 @@ import { createOrder } from '../api/order'
 import { addFavorite, checkFavorite, deleteFavorite, getFavorites } from '../api/favorite'
 import GoodsCard from '../components/GoodsCard.vue'
 import ChatModal from '../components/ChatModal.vue'
+import RatingStars from '../components/RatingStars.vue'
+import { getItemReviews } from '../api/review'
 
 const loggedIn = inject('loggedIn')
 const requireLogin = inject('requireLogin')
@@ -254,6 +286,14 @@ function openContact() {
   chatModalRef.value?.open()
 }
 const relatedItems = ref([])
+const reviews = ref([])
+
+async function fetchReviews() {
+  try {
+    const res = await getItemReviews(route.params.id)
+    reviews.value = res.data || []
+  } catch { reviews.value = [] }
+}
 
 const conditionMap = { new: '全新', like_new: '九成新', good: '七成新', fair: '五成新' }
 
@@ -332,9 +372,20 @@ function onThumbError(e) {
   e.target.style.display = 'none'
 }
 
+// 同组件切换商品时重新加载
+watch(() => route.params.id, () => {
+  window.scrollTo({ top: 0 })
+  fetchDetail()
+  checkFav()
+  fetchReviews()
+  chatReceiverId.value = null
+  chatReceiverName.value = ''
+})
+
 onMounted(async () => {
   await fetchDetail()
   checkFav()
+  fetchReviews()
   // 从"我的消息"页面跳转过来时自动打开聊天
   const openChatRaw = sessionStorage.getItem('openChat')
   if (openChatRaw) {
@@ -509,6 +560,15 @@ onMounted(async () => {
 .desc-text { white-space: pre-line; line-height: 1.7; margin: 0; font-size: 0.875rem; color: var(--color-ink); }
 .muted-text { color: var(--color-muted); margin: 0; }
 
+/* ── Reviews ── */
+.review-item { padding: 12px 0; border-bottom: 1px solid var(--color-divider); }
+.review-item:last-child { border-bottom: none; }
+.review-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.review-name { font-weight: 600; font-size: 0.875rem; color: var(--color-ink); }
+.review-stars { display: flex; gap: 1px; }
+.review-time { margin-left: auto; font-size: 0.75rem; color: var(--color-muted); }
+.review-content { font-size: 0.875rem; color: var(--color-ink); line-height: 1.6; margin: 4px 0 0; }
+
 /* ── Related ── */
 .related-title {
   font-size: 0.9375rem; font-weight: 700; margin-bottom: var(--space-md);
@@ -535,6 +595,8 @@ onMounted(async () => {
 }
 .seller-name-lg { font-size: 1rem; font-weight: 700; margin: 0 0 4px 0; color: var(--color-ink); }
 .seller-dept { font-size: 0.8125rem; color: var(--color-muted); margin: 0 0 12px 0; }
+
+.seller-rating { margin-bottom: 8px; }
 
 .seller-stats {
   display: grid; grid-template-columns: 1fr 1fr;

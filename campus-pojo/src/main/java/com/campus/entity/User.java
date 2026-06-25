@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,6 +23,9 @@ public class User implements Serializable {
     private String password;
     private String phone;
     private String avatar;
+    private String bio;
+    private String gender;
+    private LocalDate birthday;
     private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

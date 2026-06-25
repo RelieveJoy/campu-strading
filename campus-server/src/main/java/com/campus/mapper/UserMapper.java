@@ -22,9 +22,9 @@ public interface UserMapper {
      * 新增用户
      * @param user
      */
-    @Insert("insert into user(student_id, username, password, phone, avatar, status, create_time, update_time, create_user, update_user) " +
+    @Insert("insert into user(student_id, username, password, phone, avatar, bio, gender, birthday, status, create_time, update_time, create_user, update_user) " +
             "values " +
-            "(#{studentId}, #{username}, #{password}, #{phone}, #{avatar}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+            "(#{studentId}, #{username}, #{password}, #{phone}, #{avatar}, #{bio}, #{gender}, #{birthday}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
     @AutoFill(value = OperationType.INSERT)
     void insert(User user);
 

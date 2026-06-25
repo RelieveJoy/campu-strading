@@ -124,8 +124,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemVO> getByUserId(Long userId) {
-        return itemMapper.getByUserId(userId);
+    public PageResult getByUserId(Long userId, Integer status, int page, int pageSize) {
+        PageHelper.startPage(page, pageSize);
+        List<ItemVO> list = itemMapper.getByUserId(userId, status);
+        Page<ItemVO> p = (Page<ItemVO>) list;
+        return new PageResult(p.getTotal(), p.getResult());
+    }
+
+    @Override
+    public int countByUserIdAndStatus(Long userId, Integer status) {
+        return itemMapper.countByUserIdAndStatus(userId, status);
     }
 
     @Override

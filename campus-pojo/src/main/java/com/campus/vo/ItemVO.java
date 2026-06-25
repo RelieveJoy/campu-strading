@@ -47,6 +47,12 @@ public class ItemVO implements Serializable {
     @Schema(description = "状态：1在售 0下架 2已售出")
     private Integer status;
 
+    @Schema(description = "商品平均评分")
+    private BigDecimal averageRating;
+
+    @Schema(description = "有效评分数")
+    private Integer reviewCount;
+
     @Schema(description = "发布时间")
     private LocalDateTime createTime;
 }

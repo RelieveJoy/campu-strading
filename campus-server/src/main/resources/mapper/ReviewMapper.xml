@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.mapper.ReviewMapper">
+
+    <select id="listByItemId" resultType="com.campus.vo.ReviewVO">
+        select r.review_id, r.order_id, r.rating, r.content, r.create_time,
+               u.username as reviewer_name,
+               i.title as item_title
+        from review r
+        left join user u on r.reviewer_id = u.user_id
+        left join item i on r.item_id = i.item_id
+        where r.item_id = #{itemId}
+        order by r.create_time desc
+    </select>
+
+    <select id="listByTargetId" resultType="com.campus.vo.ReviewVO">
+        select r.review_id, r.order_id, r.rating, r.content, r.create_time,
+               u.username as reviewer_name,
+               i.title as item_title
+        from review r
+        left join user u on r.reviewer_id = u.user_id
+        left join item i on r.item_id = i.item_id
+        where r.target_id = #{targetId}
+          and r.rating >= 1
+        order by r.create_time desc
+    </select>
+
+    <select id="avgRatingByItemId" resultType="com.campus.vo.ItemRatingVO">
+        select #{itemId} as item_id,
+               coalesce(avg(rating), 0) as average_rating,
+               count(*) as review_count
+        from review
+        where item_id = #{itemId}
+          and rating >= 1
+    </select>
+
+    <select id="avgRatingBySellerId" resultType="com.campus.vo.UserRatingVO">
+        select #{sellerId} as user_id,
+               coalesce(avg(r.rating), 0) as overall_rating,
+               count(distinct r.item_id) as rated_item_count
+        from review r
+        join item i on r.item_id = i.item_id
+        where i.seller_id = #{sellerId}
+          and r.rating >= 1
+    </select>
+
+</mapper>

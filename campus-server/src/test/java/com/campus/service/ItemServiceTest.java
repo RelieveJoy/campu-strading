@@ -144,7 +144,7 @@ class ItemServiceTest {
     void getByUserIdReturnsUserItems() {
         itemService.add(buildItemDTO("我的商品", new BigDecimal("30")));
         Long sellerId = userMapper.getByStudentId("seller01").getUserId();
-        List<ItemVO> items = itemService.getByUserId(sellerId);
+        List<ItemVO> items = itemService.getByUserId(sellerId, null, 1, 10).getRecords();
         assertFalse(items.isEmpty());
         assertTrue(items.stream().anyMatch(i -> "我的商品".equals(i.getTitle())));
     }

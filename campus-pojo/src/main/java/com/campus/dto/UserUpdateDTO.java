@@ -23,4 +23,14 @@ public class UserUpdateDTO implements Serializable {
     @Size(max = 255, message = "头像URL最长255个字符")
     @Schema(description = "头像URL")
     private String avatar;
+
+    @Size(max = 200, message = "简介最长200个字符")
+    @Schema(description = "简介")
+    private String bio;
+
+    @Schema(description = "性别: male/female/secret")
+    private String gender;
+
+    @Schema(description = "生日 yyyy-MM-dd")
+    private String birthday;
 }

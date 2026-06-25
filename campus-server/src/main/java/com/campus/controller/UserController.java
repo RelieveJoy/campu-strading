@@ -10,12 +10,16 @@ import com.campus.dto.PasswordEditDTO;
 import com.campus.exception.BaseException;
 import com.campus.entity.User;
 import com.campus.properties.JwtProperties;
+import com.campus.result.PageResult;
 import com.campus.result.Result;
 import com.campus.service.ItemService;
+import com.campus.service.ReviewService;
 import com.campus.service.UserService;
 import com.campus.utils.JwtUtil;
 import com.campus.vo.ItemVO;
 import com.campus.vo.UserLoginVO;
+import com.campus.vo.UserProfileVO;
+import com.campus.vo.UserRatingVO;
 import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,6 +49,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private ReviewService reviewService;
     @Autowired
     private JwtProperties jwtProperties;
     @Autowired
@@ -148,10 +154,41 @@ public class UserController {
      */
     @Operation(summary = "查看用户发布的商品")
     @GetMapping("/{id}/items")
-    public Result<List<ItemVO>> getUserItems(@PathVariable Long id) {
-        log.info("查询用户 {} 发布的商品", id);
-        List<ItemVO> items = itemService.getByUserId(id);
-        return Result.success(items);
+    public Result<PageResult> getUserItems(@PathVariable Long id,
+                                            @RequestParam(required = false) Integer status,
+                                            @RequestParam(defaultValue = "1") int page,
+                                            @RequestParam(defaultValue = "12") int pageSize) {
+        log.info("查询用户 {} 发布的商品, status={}, page={}, pageSize={}", id, status, page, pageSize);
+        PageResult result = itemService.getByUserId(id, status, page, pageSize);
+        return Result.success(result);
+    }
+
+    @Operation(summary = "用户公开主页")
+    @GetMapping("/{id}/profile")
+    public Result<UserProfileVO> getUserProfile(@PathVariable Long id) {
+        log.info("查询用户 {} 公开主页", id);
+        User user = userService.getById(id);
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+
+        int totalSold = itemService.countByUserIdAndStatus(id, 2);
+        int totalItems = itemService.countByUserIdAndStatus(id, 1);
+        UserRatingVO rating = reviewService.getUserRating(id);
+
+        UserProfileVO profile = UserProfileVO.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .avatar(user.getAvatar())
+                .bio(user.getBio())
+                .gender(user.getGender())
+                .birthday(user.getBirthday())
+                .totalSold(totalSold)
+                .totalItems(totalItems)
+                .overallRating(rating.getOverallRating())
+                .ratedItemCount(rating.getRatedItemCount())
+                .build();
+        return Result.success(profile);
     }
 
     @Operation(summary = "用户登出")

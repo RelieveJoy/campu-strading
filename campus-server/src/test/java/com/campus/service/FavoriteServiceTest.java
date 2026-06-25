@@ -7,6 +7,7 @@ import com.campus.entity.User;
 import com.campus.exception.ItemBusinessException;
 import com.campus.mapper.UserMapper;
 import com.campus.vo.FavoriteVO;
+import com.campus.vo.ItemVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,8 @@ class FavoriteServiceTest {
         itemDTO.setCategoryId(1L);
         itemDTO.setImageUrl("https://example.com/img.jpg");
         itemService.add(itemDTO);
-        itemId = itemService.getByUserId(sellerId).get(0).getItemId();
+        var items = itemService.getByUserId(sellerId, null, 1, 10).getRecords();
+        itemId = ((ItemVO) items.get(0)).getItemId();
 
         // 切回买家身份
         userService.register(buildUserDTO("fan001", "收藏者"));

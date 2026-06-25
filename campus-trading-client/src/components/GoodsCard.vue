@@ -18,6 +18,9 @@
           {{ conditionText }}
         </span>
       </div>
+      <div class="goods-rating" v-if="goods.averageRating > 0 || goods.reviewCount > 0">
+        <RatingStars :average-rating="goods.averageRating || 0" :review-count="goods.reviewCount || 0" mode="readonly" />
+      </div>
       <div class="goods-footer">
         <small class="goods-location">
           <i class="bi bi-geo-alt me-1"></i>{{ goods.location || '校内' }}
@@ -33,6 +36,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import RatingStars from './RatingStars.vue'
 
 const router = useRouter()
 const props = defineProps({
@@ -134,6 +138,8 @@ function onImgError(e) {
 .goods-condition.like_new { background: #cff4fc; color: #055160; }
 .goods-condition.good { background: var(--color-accent-light); color: var(--color-primary); }
 .goods-condition.fair { background: var(--color-surface); color: var(--color-muted); }
+.goods-rating { margin-bottom: 4px; }
+
 .goods-footer {
   display: flex;
   justify-content: space-between;

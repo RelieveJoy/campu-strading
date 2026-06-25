@@ -58,7 +58,7 @@ const loading = ref(true)
 
 const allFavorites = ref([])
 const page = ref(1)
-const pageSize = 12
+const pageSize = 8
 const total = computed(() => allFavorites.value.length)
 const favorites = computed(() => {
   const start = (page.value - 1) * pageSize

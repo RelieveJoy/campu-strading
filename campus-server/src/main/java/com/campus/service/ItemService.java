@@ -22,7 +22,9 @@ public interface ItemService {
 
     ItemDetailVO getById(Long itemId);
 
-    List<ItemVO> getByUserId(Long userId);
+    PageResult getByUserId(Long userId, Integer status, int page, int pageSize);
+
+    int countByUserIdAndStatus(Long userId, Integer status);
 
     List<ItemVO> getHomeItems();
 }

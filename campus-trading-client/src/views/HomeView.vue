@@ -177,7 +177,7 @@ const hotItems = ref([])
 const hotLoading = ref(true)
 onMounted(async () => {
   try {
-    const res = await getItems({ page: 1, pageSize: 4, sort: 'hottest' })
+    const res = await getItems({ page: 1, pageSize: 8, sort: 'hottest' })
     hotItems.value = (res?.data?.records || []).map(normalize)
   } catch { hotItems.value = [] }
   finally { hotLoading.value = false }
@@ -188,7 +188,7 @@ const lostFoundItems = ref([])
 const lostFoundLoading = ref(true)
 onMounted(async () => {
   try {
-    const res = await getLostFounds({ page: 1, pageSize: 4 })
+    const res = await getLostFounds({ page: 1, pageSize: 8 })
     lostFoundItems.value = res?.data?.records || res?.data || []
   } catch { lostFoundItems.value = [] }
   finally { lostFoundLoading.value = false }
@@ -275,7 +275,7 @@ function onImgError(e) {
 /* ── Goods Grid ── */
 .goods-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-md);
 }
 

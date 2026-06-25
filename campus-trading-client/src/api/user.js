@@ -12,4 +12,6 @@ export const updateUserInfo = (id, data) => request({ url: `/users/${id}`, metho
 
 export const editPassword = (data) => request({ url: '/users/password', method: 'put', data })
 
-export const getUserItems = (id) => request({ url: `/users/${id}/items`, method: 'get' })
+export const getUserProfile = (id) => request({ url: `/users/${id}/profile`, method: 'get' })
+
+export const getUserItems = (id, params) => request({ url: `/users/${id}/items`, method: 'get', params })

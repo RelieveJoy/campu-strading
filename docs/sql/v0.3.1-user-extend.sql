@@ -1,0 +1,5 @@
+-- v0.3.1 用户扩展字段
+ALTER TABLE user
+    ADD COLUMN bio VARCHAR(200) DEFAULT NULL COMMENT '简介',
+    ADD COLUMN gender VARCHAR(10) DEFAULT NULL COMMENT '性别: male/female/secret',
+    ADD COLUMN birthday DATE DEFAULT NULL COMMENT '生日';

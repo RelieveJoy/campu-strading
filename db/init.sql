@@ -102,6 +102,22 @@ CREATE TABLE IF NOT EXISTS message (
     KEY idx_item_users (item_id, sender_id, receiver_id)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS review (
+    review_id   BIGINT   NOT NULL AUTO_INCREMENT COMMENT '主键',
+    order_id    BIGINT   NOT NULL COMMENT '关联订单ID',
+    item_id     BIGINT   NOT NULL COMMENT '关联商品ID',
+    reviewer_id BIGINT   NOT NULL COMMENT '评分人（买家）ID',
+    target_id   BIGINT   NOT NULL COMMENT '被评人（卖家）ID',
+    rating      TINYINT  NOT NULL DEFAULT 0 COMMENT '评分 0未评 1~5已评',
+    content     VARCHAR(500) DEFAULT NULL COMMENT '评价内容',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (review_id),
+    UNIQUE KEY uk_order (order_id),
+    UNIQUE KEY uk_item_reviewer (item_id, reviewer_id),
+    KEY idx_item (item_id),
+    KEY idx_target (target_id)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS notification (
     notification_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
     user_id         BIGINT       NOT NULL COMMENT '接收通知的用户ID',

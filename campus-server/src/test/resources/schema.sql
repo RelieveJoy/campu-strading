@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS notification;
 DROP TABLE IF EXISTS message;
 DROP TABLE IF EXISTS favorite;
@@ -105,4 +106,18 @@ CREATE TABLE notification (
     is_read         TINYINT      DEFAULT 0,
     create_time     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (notification_id)
+);
+
+CREATE TABLE review (
+    review_id   BIGINT       NOT NULL AUTO_INCREMENT,
+    order_id    BIGINT       NOT NULL,
+    item_id     BIGINT       NOT NULL,
+    reviewer_id BIGINT       NOT NULL,
+    target_id   BIGINT       NOT NULL,
+    rating      TINYINT      NOT NULL DEFAULT 0,
+    content     VARCHAR(500) DEFAULT NULL,
+    create_time TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (review_id),
+    UNIQUE KEY uk_order (order_id),
+    UNIQUE KEY uk_item_reviewer (item_id, reviewer_id)
 );

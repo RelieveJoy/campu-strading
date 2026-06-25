@@ -37,7 +37,10 @@ public interface ItemMapper {
 
     ItemDetailVO getDetailById(Long itemId);
 
-    List<ItemVO> getByUserId(Long userId);
+    List<ItemVO> getByUserId(@Param("userId") Long userId, @Param("status") Integer status);
+
+    @Select("select count(*) from item where seller_id = #{userId} and status = #{status}")
+    int countByUserIdAndStatus(@Param("userId") Long userId, @Param("status") Integer status);
 
     @Update("update item set view_count = #{count} where item_id = #{itemId}")
     void updateViewCount(Long itemId, Integer count);

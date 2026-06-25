@@ -3,6 +3,7 @@ package com.campus.service;
 import com.campus.context.BaseContext;
 import com.campus.dto.ItemDTO;
 import com.campus.mapper.UserMapper;
+import com.campus.vo.ItemVO;
 import com.campus.vo.MessageVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +48,8 @@ class MessageServiceTest {
         itemDTO.setCategoryId(1L);
         itemDTO.setImageUrl("https://example.com/img.jpg");
         itemService.add(itemDTO);
-        itemId = itemService.getByUserId(sellerId).get(0).getItemId();
+        var items = itemService.getByUserId(sellerId, null, 1, 10).getRecords();
+        itemId = ((ItemVO) items.get(0)).getItemId();
     }
 
     @Test
