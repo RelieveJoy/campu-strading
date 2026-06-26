@@ -410,6 +410,7 @@
 
 <script setup>
 import { ref, onMounted, reactive, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUserProfile, getUserItems, updateUserInfo, editPassword } from '../api/user'
 import { getUserReviewList } from '../api/review'
@@ -418,6 +419,7 @@ import { getFavorites } from '../api/favorite'
 import GoodsCard from '../components/GoodsCard.vue'
 import RatingStars from '../components/RatingStars.vue'
 
+const route = useRoute()
 const userData = JSON.parse(localStorage.getItem('user') || '{}')
 const myId = userData.id || 0
 const studentId = userData.studentId || ''
@@ -650,10 +652,24 @@ function onItemsPageChange(p) {
 
 watch(editingNick, (val) => { if (val) nickForm.value = profile.value?.username || '' })
 
+function applyQueryView() {
+  const v = route.query.view
+  if (v === 'bought' || v === 'sold' || v === 'favorites') {
+    goView(v)
+  } else if (!currentView.value || currentView.value === 'home') {
+    // 首次进入或无 query 参数时默认加载
+  }
+}
+
 onMounted(() => {
   fetchProfile()
-  fetchItems(1)
   fetchReviews()
+  applyQueryView()
+  if (!route.query.view) fetchItems(1)
+})
+
+watch(() => route.query.view, () => {
+  applyQueryView()
 })
 </script>
 

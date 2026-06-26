@@ -47,12 +47,9 @@
               </button>
               <div class="user-dropdown" v-show="menuOpen">
                 <router-link to="/publish">发布商品</router-link>
-                <router-link to="/my-items">我的商品</router-link>
-                <router-link to="/orders">我的订单</router-link>
-                <router-link to="/my-favorites">我的收藏</router-link>
-                <router-link to="/messages">我的消息</router-link>
-                <router-link to="/profile">个人信息</router-link>
-                <router-link to="/stats">数据统计</router-link>
+                <router-link to="/profile?view=bought">我买到的</router-link>
+                <router-link to="/profile?view=sold">我卖出的</router-link>
+                <router-link to="/profile?view=favorites">我的收藏</router-link>
                 <hr />
                 <a href="#" @click.prevent="handleLogout">退出登录</a>
               </div>
