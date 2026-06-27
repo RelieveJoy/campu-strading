@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 
 const props = defineProps({
   announcements: { type: Array, default: () => [] }
@@ -21,13 +21,17 @@ const props = defineProps({
 const current = ref(0)
 let timer = null
 
-onMounted(() => {
+function startTimer() {
+  if (timer) clearInterval(timer)
   if (props.announcements.length > 1) {
+    current.value = 0
     timer = setInterval(() => {
       current.value = (current.value + 1) % props.announcements.length
     }, 4000)
   }
-})
+}
+
+watch(() => props.announcements, startTimer, { immediate: true })
 
 onUnmounted(() => { if (timer) clearInterval(timer) })
 </script>
@@ -41,27 +45,22 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
 .announcement-inner {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 6px 16px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
   color: #664d03;
   font-size: 0.8125rem;
 }
 .announcement-text {
-  position: relative;
   flex: 1;
-  min-height: 1.4em;
-}
-.announcement-item {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  white-space: nowrap;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
+.announcement-item {
+  display: none;
+}
 .announcement-item.active {
-  opacity: 1;
+  display: inline;
 }
 </style>

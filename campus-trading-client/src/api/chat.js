@@ -1,7 +1,7 @@
 import request from '../utils/request'
 
 // 获取某个商品下与对方的聊天记录
-export const getMessages = (itemId, receiverId) => request({ url: `/messages/${itemId}`, method: 'get', params: { receiverId } })
+export const getMessages = (itemId, receiverId, sourceType = 'item') => request({ url: `/messages/${itemId}`, method: 'get', params: { receiverId, sourceType } })
 
 // 发送消息
 export const sendMessage = (data) => request({ url: '/messages', method: 'post', data })
@@ -10,4 +10,4 @@ export const sendMessage = (data) => request({ url: '/messages', method: 'post',
 export const getConversations = () => request({ url: '/messages/conversations', method: 'get' })
 
 // 标记已读
-export const markRead = (itemId) => request({ url: `/messages/${itemId}/read`, method: 'post' })
+export const markRead = (itemId, sourceType = 'item') => request({ url: `/messages/${itemId}/read`, method: 'post', params: { sourceType } })

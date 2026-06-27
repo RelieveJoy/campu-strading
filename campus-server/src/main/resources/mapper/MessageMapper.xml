@@ -11,6 +11,7 @@
         from message m
         left join user u on m.sender_id = u.user_id
         where m.item_id = #{itemId}
+          and m.source_type = #{sourceType}
           and ((m.sender_id = #{userId} and m.receiver_id = #{otherId})
             or (m.sender_id = #{otherId} and m.receiver_id = #{userId}))
         order by m.create_time asc
@@ -19,8 +20,9 @@
     <!-- 查当前用户参与的所有对话列表 -->
     <select id="listConversations" resultType="com.campus.vo.ConversationVO">
         select t.item_id,
-               i.title     as item_title,
-               i.image_url as item_image,
+               t.source_type,
+               coalesce(i.title, lf.title)     as item_title,
+               coalesce(i.image_url, lf.image_url) as item_image,
                t.other_user_id,
                u.username  as other_user_name,
                t.last_content,
@@ -28,6 +30,7 @@
                t.unread_count
         from (
             select m.item_id,
+                   m.source_type,
                    case when m.sender_id = #{userId}
                         then m.receiver_id
                         else m.sender_id
@@ -43,9 +46,10 @@
             from message m
             where m.sender_id = #{userId}
                or m.receiver_id = #{userId}
-            group by m.item_id, other_user_id
+            group by m.item_id, m.source_type, other_user_id
         ) t
-        left join item i on i.item_id = t.item_id
+        left join item i on i.item_id = t.item_id and t.source_type = 'item'
+        left join lost_found lf on lf.lost_found_id = t.item_id and t.source_type = 'lostfound'
         left join user u on u.user_id = t.other_user_id
         order by t.last_time desc
     </select>

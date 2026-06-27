@@ -109,13 +109,11 @@
           :to="`/lostfound/${lf.id}`"
           class="lostfound-mini-card"
         >
-          <img :src="lf.image || lf.images?.[0]" :alt="lf.title" @error="onImgError" />
+          <img :src="lf.image" :alt="lf.title" @error="onImgError" />
           <div class="lf-body">
             <div class="lf-header">
               <h6>{{ lf.title }}</h6>
-              <span class="lf-badge" :class="lf.status === 'closed' ? 'closed' : 'open'">
-                {{ lf.status === 'closed' ? '已归还' : '可认领' }}
-              </span>
+              <span class="lf-badge" :class="lf.category">{{ lf.category === 'lost' ? '寻物' : '招领' }}</span>
             </div>
             <small class="lf-location">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -189,7 +187,13 @@ const lostFoundLoading = ref(true)
 onMounted(async () => {
   try {
     const res = await getLostFounds({ page: 1, pageSize: 8 })
-    lostFoundItems.value = res?.data?.records || res?.data || []
+    lostFoundItems.value = (res?.data?.records || res?.data || []).map(lf => ({
+      ...lf,
+      id: lf.lostFoundId,
+      image: lf.imageUrl,
+      category: lf.category,
+      location: lf.location,
+    }))
   } catch { lostFoundItems.value = [] }
   finally { lostFoundLoading.value = false }
 })
@@ -312,7 +316,7 @@ function onImgError(e) {
 /* ── LostFound Mini ── */
 .lostfound-mini-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--space-md);
 }
 .lostfound-mini-card {
@@ -327,29 +331,29 @@ function onImgError(e) {
 }
 .lostfound-mini-card:hover { box-shadow: var(--shadow-ambient-low); }
 .lostfound-mini-card img {
-  width: 120px; min-height: 100%; object-fit: cover; flex-shrink: 0;
+  width: 140px; min-height: 100%; object-fit: cover; flex-shrink: 0;
   background: var(--color-surface);
 }
 .lf-body {
-  padding: 12px; display: flex; flex-direction: column; flex: 1;
+  padding: 16px; display: flex; flex-direction: column; flex: 1;
 }
 .lf-header {
   display: flex; justify-content: space-between; align-items: flex-start;
   gap: 8px; margin-bottom: auto;
 }
 .lf-header h6 {
-  font-size: 0.875rem; font-weight: 600; margin: 0;
+  font-size: 0.9375rem; font-weight: 600; margin: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .lf-badge {
   font-size: 0.6875rem; padding: 2px 8px; border-radius: var(--radius-sm);
   white-space: nowrap; flex-shrink: 0;
 }
-.lf-badge.open { background: var(--color-success-light); color: var(--color-success); }
-.lf-badge.closed { background: var(--color-surface); color: var(--color-muted); }
+.lf-badge.lost { background: var(--color-warning-light); color: var(--color-warning); }
+.lf-badge.found { background: #e8edf8; color: var(--color-primary); }
 .lf-location {
   display: flex; align-items: center; gap: 4px;
-  color: var(--color-muted); font-size: 0.75rem; margin-top: 6px;
+  color: var(--color-muted); font-size: 0.8125rem; margin-top: 6px;
 }
 
 /* ── Responsive ── */

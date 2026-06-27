@@ -74,7 +74,7 @@
       ref="chatModalRef"
       :item-id="chatTarget.itemId"
       :receiver-id="chatTarget.receiverId"
-      :seller-name="chatTarget.sellerName"
+      :contact-name="chatTarget.contactName"
       :item-title="chatTarget.itemTitle"
     />
   </div>
@@ -101,7 +101,7 @@ const user = ref(JSON.parse(localStorage.getItem('user') || '{}'))
 
 const statusMap = { 1: '待确认', 2: '已完成', 3: '已取消' }
 const chatModalRef = ref(null)
-const chatTarget = ref({ itemId: 0, receiverId: 0, sellerName: '', itemTitle: '' })
+const chatTarget = ref({ itemId: 0, receiverId: 0, contactName: '', itemTitle: '' })
 const ratingModalRef = ref(null)
 const reviewOrder = ref({ orderId: 0, itemId: 0, itemTitle: '' })
 const reviewExisting = ref(null)  // 已有评价对象（含 reviewId）→ PUT；null → POST
@@ -111,7 +111,7 @@ function openChat(order) {
   chatTarget.value = {
     itemId: order.itemId,
     receiverId: order.sellerId,
-    sellerName: order.sellerName,
+    contactName: order.sellerName,
     itemTitle: order.itemTitle
   }
   chatModalRef.value?.open()

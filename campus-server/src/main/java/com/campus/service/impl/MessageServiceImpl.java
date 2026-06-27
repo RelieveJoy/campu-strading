@@ -20,9 +20,10 @@ public class MessageServiceImpl implements MessageService {
     private final MessageMapper messageMapper;
 
     @Override
-    public MessageVO send(Long senderId, Long itemId, Long receiverId, String content) {
+    public MessageVO send(Long senderId, Long itemId, String sourceType, Long receiverId, String content) {
         Message message = Message.builder()
                 .itemId(itemId)
+                .sourceType(sourceType != null ? sourceType : "item")
                 .senderId(senderId)
                 .receiverId(receiverId)
                 .content(content)
@@ -33,6 +34,7 @@ public class MessageServiceImpl implements MessageService {
         return MessageVO.builder()
                 .messageId(message.getMessageId())
                 .itemId(itemId)
+                .sourceType(message.getSourceType())
                 .senderId(senderId)
                 .receiverId(receiverId)
                 .content(content)
@@ -42,13 +44,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageVO> getHistory(Long itemId, Long userId, Long otherId) {
-        return messageMapper.listByItemId(itemId, userId, otherId);
+    public List<MessageVO> getHistory(Long itemId, String sourceType, Long userId, Long otherId) {
+        return messageMapper.listByItemId(itemId, sourceType != null ? sourceType : "item", userId, otherId);
     }
 
     @Override
-    public void markRead(Long userId, Long itemId) {
-        messageMapper.markRead(userId, itemId);
+    public void markRead(Long userId, Long itemId, String sourceType) {
+        messageMapper.markRead(userId, itemId, sourceType != null ? sourceType : "item");
     }
 
     @Override

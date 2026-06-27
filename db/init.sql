@@ -133,3 +133,45 @@ CREATE TABLE IF NOT EXISTS notification (
     KEY idx_user_read (user_id, is_read),
     KEY idx_time (create_time)
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS banner (
+    banner_id   BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    title       VARCHAR(100) NOT NULL COMMENT '标题',
+    image_url   VARCHAR(500) NOT NULL COMMENT '图片URL',
+    link_url    VARCHAR(500) DEFAULT NULL COMMENT '跳转链接',
+    sort        INT          DEFAULT 0 COMMENT '排序',
+    status      TINYINT      DEFAULT 1 COMMENT '1启用 0禁用',
+    create_time DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    create_user BIGINT       DEFAULT NULL,
+    update_user BIGINT       DEFAULT NULL,
+    PRIMARY KEY (banner_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS announcement (
+    announcement_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    title           VARCHAR(100) NOT NULL COMMENT '标题',
+    content         TEXT         DEFAULT NULL COMMENT '内容',
+    status          TINYINT      DEFAULT 1 COMMENT '1启用 0禁用',
+    create_time     DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    update_time     DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    create_user     BIGINT       DEFAULT NULL,
+    update_user     BIGINT       DEFAULT NULL,
+    PRIMARY KEY (announcement_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS lost_found (
+    lost_found_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    title         VARCHAR(100) NOT NULL COMMENT '标题',
+    description   TEXT         DEFAULT NULL COMMENT '描述',
+    image_url     VARCHAR(500) DEFAULT NULL COMMENT '图片URL',
+    category      VARCHAR(10)  NOT NULL COMMENT 'lost=寻物 found=招领',
+    location      VARCHAR(200) DEFAULT NULL COMMENT '在哪见到的',
+    contact       VARCHAR(100) DEFAULT NULL COMMENT '联系方式',
+    user_id       BIGINT       NOT NULL COMMENT '发布者ID',
+    create_time   DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    update_time   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (lost_found_id),
+    KEY idx_category (category),
+    KEY idx_user (user_id)
+) ENGINE=InnoDB;

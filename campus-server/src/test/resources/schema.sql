@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS lost_found;
+DROP TABLE IF EXISTS announcement;
+DROP TABLE IF EXISTS banner;
 DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS notification;
 DROP TABLE IF EXISTS message;
@@ -14,6 +17,9 @@ CREATE TABLE user (
     password      VARCHAR(255) NOT NULL,
     phone         VARCHAR(20)  DEFAULT NULL,
     avatar        VARCHAR(255) DEFAULT NULL,
+    bio           VARCHAR(200) DEFAULT NULL,
+    gender        VARCHAR(10)  DEFAULT NULL,
+    birthday      DATE         DEFAULT NULL,
     status        TINYINT      DEFAULT 1,
     create_time   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     update_time   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
@@ -120,4 +126,44 @@ CREATE TABLE review (
     PRIMARY KEY (review_id),
     UNIQUE KEY uk_order (order_id),
     UNIQUE KEY uk_item_reviewer (item_id, reviewer_id)
+);
+
+CREATE TABLE banner (
+    banner_id   BIGINT       NOT NULL AUTO_INCREMENT,
+    title       VARCHAR(100) NOT NULL,
+    image_url   VARCHAR(500) NOT NULL,
+    link_url    VARCHAR(500) DEFAULT NULL,
+    sort        INT          DEFAULT 0,
+    status      TINYINT      DEFAULT 1,
+    create_time TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    create_user BIGINT       DEFAULT NULL,
+    update_user BIGINT       DEFAULT NULL,
+    PRIMARY KEY (banner_id)
+);
+
+CREATE TABLE announcement (
+    announcement_id BIGINT       NOT NULL AUTO_INCREMENT,
+    title           VARCHAR(100) NOT NULL,
+    content         TEXT         DEFAULT NULL,
+    status          TINYINT      DEFAULT 1,
+    create_time     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    update_time     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    create_user     BIGINT       DEFAULT NULL,
+    update_user     BIGINT       DEFAULT NULL,
+    PRIMARY KEY (announcement_id)
+);
+
+CREATE TABLE lost_found (
+    lost_found_id BIGINT       NOT NULL AUTO_INCREMENT,
+    title         VARCHAR(100) NOT NULL,
+    description   TEXT         DEFAULT NULL,
+    image_url     VARCHAR(500) DEFAULT NULL,
+    category      VARCHAR(10)  NOT NULL,
+    location      VARCHAR(200) DEFAULT NULL,
+    contact       VARCHAR(100) DEFAULT NULL,
+    user_id       BIGINT       NOT NULL,
+    create_time   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    update_time   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (lost_found_id)
 );

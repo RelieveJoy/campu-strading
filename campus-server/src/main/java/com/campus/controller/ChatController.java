@@ -35,8 +35,9 @@ public class ChatController {
     @Operation(summary = "查询某个商品下与对方的聊天记录")
     @GetMapping("/{itemId}")
     public Result<List<MessageVO>> getHistory(@PathVariable Long itemId,
+                                               @RequestParam String sourceType,
                                                @RequestParam Long receiverId) {
-        List<MessageVO> list = messageService.getHistory(itemId, BaseContext.getCurrentId(), receiverId);
+        List<MessageVO> list = messageService.getHistory(itemId, sourceType, BaseContext.getCurrentId(), receiverId);
         return Result.success(list);
     }
 
@@ -44,7 +45,8 @@ public class ChatController {
     @PostMapping
     public Result<MessageVO> send(@RequestBody @Valid MessageDTO dto) {
         Long senderId = BaseContext.getCurrentId();
-        MessageVO vo = messageService.send(senderId, dto.getItemId(), dto.getReceiverId(), dto.getContent());
+        String st = dto.getSourceType() != null ? dto.getSourceType() : "item";
+        MessageVO vo = messageService.send(senderId, dto.getItemId(), st, dto.getReceiverId(), dto.getContent());
 
         // 只推送给收发双方各自的频道（不广播给所有订阅者）
         messagingTemplate.convertAndSend(
@@ -64,8 +66,9 @@ public class ChatController {
 
     @Operation(summary = "标记商品消息为已读")
     @PostMapping("/{itemId}/read")
-    public Result<String> markRead(@PathVariable Long itemId) {
-        messageService.markRead(BaseContext.getCurrentId(), itemId);
+    public Result<String> markRead(@PathVariable Long itemId,
+                                    @RequestParam(defaultValue = "item") String sourceType) {
+        messageService.markRead(BaseContext.getCurrentId(), itemId, sourceType);
         return Result.success();
     }
 }

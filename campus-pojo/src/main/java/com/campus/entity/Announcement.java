@@ -12,14 +12,16 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message implements Serializable {
+public class Announcement implements Serializable {
 
-    private Long messageId;
-    private Long itemId;
-    private String sourceType;
-    private Long senderId;
-    private Long receiverId;
+    private static final long serialVersionUID = 1L;
+
+    private Long announcementId;
+    private String title;
     private String content;
-    private Integer isRead;
+    private Integer status;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+    private Long createUser;
+    private Long updateUser;
 }

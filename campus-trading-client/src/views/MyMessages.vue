@@ -29,8 +29,8 @@
       <div v-else class="list-wrap">
         <router-link
           v-for="conv in conversations"
-          :key="'chat-' + conv.itemId + '-' + conv.otherUserId"
-          :to="`/item/${conv.itemId}`"
+          :key="'chat-' + conv.itemId + '-' + conv.sourceType + '-' + conv.otherUserId"
+          :to="conv.sourceType === 'lostfound' ? `/lostfound/${conv.itemId}` : `/item/${conv.itemId}`"
           class="list-item"
           :class="{ unread: conv.unreadCount > 0 }"
           @click="openChat(conv)"
@@ -123,6 +123,7 @@ function openChat(conv) {
     itemId: conv.itemId,
     receiverId: conv.otherUserId,
     receiverName: conv.otherUserName,
+    sourceType: conv.sourceType || 'item',
   }))
 }
 

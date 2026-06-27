@@ -6,9 +6,9 @@
           <!-- 头部 -->
           <div class="chat-header">
             <div class="chat-header-left">
-              <span class="chat-avatar">{{ sellerName?.charAt(0) || '?' }}</span>
+              <span class="chat-avatar">{{ contactName?.charAt(0) || '?' }}</span>
               <div>
-                <h6 class="chat-seller">{{ sellerName }}</h6>
+                <h6 class="chat-seller">{{ contactName }}</h6>
                 <small class="chat-item-title">{{ itemTitle }}</small>
               </div>
             </div>
@@ -71,8 +71,9 @@ import { getMessages, sendMessage, markRead } from '../api/chat'
 const props = defineProps({
   itemId: { type: [Number, String], required: true },
   receiverId: { type: [Number, String], required: true },
-  sellerName: { type: String, default: '卖家' },
+  contactName: { type: String, default: '' },
   itemTitle: { type: String, default: '' },
+  sourceType: { type: String, default: 'item' },
 })
 
 const emit = defineEmits(['close'])
@@ -98,7 +99,7 @@ async function open() {
   await fetchMessages()
   connectWebSocket()
   // 打开聊天时标记对方发来的消息为已读
-  markRead(props.itemId).catch(() => {})
+  markRead(props.itemId, props.sourceType).catch(() => {})
 }
 
 function close() {
@@ -146,7 +147,7 @@ onUnmounted(() => disconnectWebSocket())
 async function fetchMessages() {
   loading.value = true
   try {
-    const res = await getMessages(props.itemId, Number(props.receiverId))
+    const res = await getMessages(props.itemId, Number(props.receiverId), props.sourceType)
     messages.value = res.data || []
     await nextTick()
     scrollToBottom()
@@ -159,7 +160,7 @@ async function send() {
   if (!content || sending.value) return
   sending.value = true
   try {
-    const res = await sendMessage({ itemId: props.itemId, receiverId: Number(props.receiverId), content })
+    const res = await sendMessage({ itemId: props.itemId, sourceType: props.sourceType, receiverId: Number(props.receiverId), content })
     text.value = ''
     // 用服务端返回的完整消息替换乐观插入
     const msg = res.data || {

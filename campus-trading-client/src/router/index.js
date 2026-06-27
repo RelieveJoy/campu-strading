@@ -14,6 +14,7 @@ const routes = [
       { path: '', name: 'Home', component: () => import('../views/HomeView.vue') },
       { path: 'goods', name: 'GoodsList', component: () => import('../views/GoodsListView.vue') },
       { path: 'lostfound', name: 'LostFound', component: () => import('../views/LostFoundView.vue') },
+      { path: 'lostfound/:id', name: 'LostFoundDetail', component: () => import('../views/LostFoundDetail.vue') },
       { path: 'notice', name: 'Notice', component: () => import('../views/NoticeView.vue') },
       { path: 'item/:id', name: 'ItemDetail', component: () => import('../views/ItemDetail.vue') },
       { path: 'publish', name: 'PublishItem', component: () => import('../views/PublishItem.vue') },

@@ -46,6 +46,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <div class="user-dropdown" v-show="menuOpen">
+                <router-link to="/messages">我的消息</router-link>
                 <router-link to="/publish">发布商品</router-link>
                 <router-link to="/profile?view=bought">我买到的</router-link>
                 <router-link to="/profile?view=sold">我卖出的</router-link>
@@ -96,14 +97,19 @@ import { logout } from '../api/user'
 import AnnouncementBar from '../components/AnnouncementBar.vue'
 import FooterBar from '../components/FooterBar.vue'
 import LoginModal from './LoginModal.vue'
+import { getAnnouncements } from '../api/announcement'
 
 const router = useRouter()
 const route = useRoute()
 
 // ── 公告 ──
-const announcements = ref([
-  { title: '欢迎使用操场集市', content: '本平台专为校园二手物品交易打造，请遵守交易规则，诚信交易！' }
-])
+const announcements = ref([])
+onMounted(async () => {
+  try {
+    const res = await getAnnouncements()
+    announcements.value = res.data || []
+  } catch { /* keep empty */ }
+})
 
 // ── 搜索 ──
 const searchQuery = ref('')
@@ -156,7 +162,7 @@ const mobileOpen = ref(false)
 watch(() => route.path, () => { mobileOpen.value = false })
 
 // ── 路由守卫 ──
-const authPaths = ['/publish', '/my-items', '/orders', '/my-favorites', '/profile', '/stats', '/messages']
+const authPaths = ['/messages', '/publish', '/my-items', '/orders', '/my-favorites', '/profile', '/stats']
 provide('loggedIn', loggedIn)
 provide('requireLogin', () => {
   if (!loggedIn.value) { openLogin(); return false }

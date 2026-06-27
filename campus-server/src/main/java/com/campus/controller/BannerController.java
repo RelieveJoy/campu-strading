@@ -1,25 +1,30 @@
 package com.campus.controller;
 
+import com.campus.entity.Banner;
 import com.campus.result.Result;
+import com.campus.service.BannerService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-/**
- * 首页轮播图 — 前端接口已暴露，后端待完善（当前返回空列表，前端降级不显示轮播）
- */
 @RestController
 @RequestMapping("/api/banners")
+@RequiredArgsConstructor
 @Slf4j
 @Tag(name = "轮播图相关接口")
 public class BannerController {
 
+    private final BannerService bannerService;
+
+    @Operation(summary = "获取启用的轮播图列表")
     @GetMapping
-    public Result<List<Map<String, Object>>> list() {
-        return Result.success(new ArrayList<>());
+    public Result<List<Banner>> list() {
+        log.info("查询轮播图列表");
+        List<Banner> list = bannerService.list();
+        return Result.success(list);
     }
 }

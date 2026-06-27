@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class ConversationVO implements Serializable {
 
     private Long itemId;
+    private String sourceType;
     private String itemTitle;
     private String itemImage;       // 商品首图
     private Long otherUserId;       // 对方的用户ID

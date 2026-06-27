@@ -10,10 +10,10 @@
           </h4>
           <p class="page-desc">浏览已审核的招领信息，若是失主可直接联系拾取者核对认领。</p>
         </div>
-        <router-link to="/publish-lostfound" class="btn-publish">
+        <button class="btn-publish" @click="showPublish = true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           发布招领
-        </router-link>
+        </button>
       </div>
 
       <!-- 搜索筛选 -->
@@ -25,11 +25,11 @@
               <input v-model="keyword" type="text" class="filter-input" placeholder="搜索物品名称、地点、特征描述" />
             </div>
             <div class="filter-field">
-              <label class="filter-label">状态</label>
-              <select v-model="statusFilter" class="filter-select">
+              <label class="filter-label">类别</label>
+              <select v-model="categoryFilter" class="filter-select">
                 <option value="">全部</option>
-                <option value="active">可认领</option>
-                <option value="closed">已归还</option>
+                <option value="lost">寻物</option>
+                <option value="found">招领</option>
               </select>
             </div>
             <button type="submit" class="filter-btn">筛选</button>
@@ -64,19 +64,17 @@
           :to="`/lostfound/${item.id}`"
           class="lf-card"
         >
-          <img :src="item.image || item.images?.[0]" :alt="item.title" @error="onImgError" />
+          <img :src="item.image" :alt="item.title" @error="onImgError" />
           <div class="lf-card-body">
             <div class="lf-card-header">
               <h5>{{ item.title }}</h5>
-              <span class="lf-status" :class="item.status === 'closed' ? 'closed' : 'active'">
-                {{ item.status === 'closed' ? '已归还' : '可认领' }}
-              </span>
+              <span class="lf-cat" :class="item.category">{{ item.category === 'lost' ? '寻物' : '招领' }}</span>
             </div>
-            <p class="lf-loc">
+            <p class="lf-loc" v-if="item.location">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              {{ item.location || '校内' }}
+              {{ item.location }}
             </p>
-            <p class="lf-date" v-if="item.createdAt">{{ item.createdAt }}</p>
+            <p class="lf-date" v-if="item.createTime">{{ item.createTime }}</p>
           </div>
         </router-link>
       </div>
@@ -93,15 +91,54 @@
         />
       </div>
     </div>
+
+    <!-- 发布弹窗 -->
+    <el-dialog v-model="showPublish" title="发布失物招领" width="500px" :close-on-click-modal="false">
+      <el-form :model="pubForm" label-width="80px">
+        <el-form-item label="标题" required>
+          <el-input v-model="pubForm.title" placeholder="物品名称" maxlength="100" />
+        </el-form-item>
+        <el-form-item label="类别" required>
+          <el-radio-group v-model="pubForm.category">
+            <el-radio value="lost">寻物</el-radio>
+            <el-radio value="found">招领</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="位置">
+          <el-input v-model="pubForm.location" placeholder="在哪见到的" maxlength="100" />
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model="pubForm.description" type="textarea" :rows="3" placeholder="物品特征等" />
+        </el-form-item>
+        <el-form-item label="联系方式">
+          <el-input v-model="pubForm.contact" placeholder="手机号或微信" maxlength="50" />
+        </el-form-item>
+        <el-form-item label="图片">
+          <div class="upload-wrap">
+            <input type="file" ref="fileInput" accept="image/*" @change="onFileChange" style="display:none" />
+            <el-button @click="$refs.fileInput.click()" :loading="uploading">
+              {{ uploading ? '上传中...' : '选择图片' }}
+            </el-button>
+            <img v-if="pubForm.imageUrl" :src="pubForm.imageUrl" class="upload-preview" />
+          </div>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showPublish = false">取消</el-button>
+        <el-button type="primary" @click="handlePublish" :loading="publishing">发布</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getLostFounds } from '../api/lostfound'
+import { ref, onMounted, reactive } from 'vue'
+import { ElMessage } from 'element-plus'
+import { getLostFounds, publishLostFound } from '../api/lostfound'
+import { uploadFile } from '../api/item'
 
 const keyword = ref('')
-const statusFilter = ref('')
+const categoryFilter = ref('')       // '' | 'lost' | 'found'
 const page = ref(1)
 const pageSize = 8
 
@@ -113,19 +150,60 @@ async function fetchItems() {
   loading.value = true
   try {
     const params = { page: page.value, pageSize }
-    if (keyword.value) params.q = keyword.value
-    if (statusFilter.value) params.status = statusFilter.value
+    if (keyword.value) params.keyword = keyword.value
+    if (categoryFilter.value) params.category = categoryFilter.value
     const res = await getLostFounds(params)
-    items.value = res?.data?.records || res?.data || []
+    items.value = (res?.data?.records || res?.data || []).map(normalize)
     total.value = res?.data?.total || items.value.length
   } catch { items.value = []; total.value = 0 }
   finally { loading.value = false }
+}
+
+function normalize(item) {
+  return {
+    ...item,
+    id: item.lostFoundId,
+    image: item.imageUrl,
+  }
 }
 
 function onPage(p) { page.value = p; fetchItems(); window.scrollTo({ top: 0, behavior: 'smooth' }) }
 
 function onImgError(e) {
   e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><rect fill="%23f5f6f8" width="300" height="200"/><text x="150" y="100" text-anchor="middle" fill="%23adb5bd" font-size="14">暂无图片</text></svg>'
+}
+
+const showPublish = ref(false)
+const publishing = ref(false)
+const uploading = ref(false)
+const pubForm = reactive({ title: '', category: 'found', location: '', description: '', contact: '', imageUrl: '' })
+
+async function onFileChange(e) {
+  const file = e.target.files[0]
+  if (!file) return
+  uploading.value = true
+  try {
+    const res = await uploadFile(file)
+    pubForm.imageUrl = res.data || ''
+    ElMessage.success('上传成功')
+  } catch { /* handled by interceptor */ }
+  finally { uploading.value = false }
+}
+
+async function handlePublish() {
+  if (!pubForm.title || !pubForm.category) {
+    ElMessage.warning('请填写标题和类别')
+    return
+  }
+  publishing.value = true
+  try {
+    await publishLostFound({ ...pubForm })
+    ElMessage.success('发布成功')
+    showPublish.value = false
+    pubForm.title = ''; pubForm.description = ''; pubForm.contact = ''; pubForm.imageUrl = ''
+    fetchItems()
+  } catch { /* interceptor handles */ }
+  finally { publishing.value = false }
 }
 
 onMounted(fetchItems)
@@ -200,6 +278,9 @@ onMounted(fetchItems)
   gap: 8px; margin-bottom: 8px;
 }
 .lf-card-header h5 { font-size: 0.9375rem; font-weight: 600; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.lf-cat { font-size: 0.6875rem; padding: 2px 8px; border-radius: var(--radius-sm); white-space: nowrap; flex-shrink: 0; }
+.lf-cat.lost { background: var(--color-warning-light); color: var(--color-warning); }
+.lf-cat.found { background: var(--color-primary-light, #e8edf8); color: var(--color-primary); }
 .lf-status { font-size: 0.6875rem; padding: 2px 8px; border-radius: var(--radius-sm); white-space: nowrap; flex-shrink: 0; }
 .lf-status.active { background: var(--color-success-light); color: var(--color-success); }
 .lf-status.closed { background: var(--color-surface); color: var(--color-muted); }
@@ -222,6 +303,9 @@ onMounted(fetchItems)
 .empty-state { text-align: center; padding: var(--space-xxl) var(--space-lg); color: var(--color-muted); }
 
 .pagination-wrap { margin-top: var(--space-xl); display: flex; justify-content: center; }
+
+.upload-wrap { display: flex; align-items: center; gap: 12px; }
+.upload-preview { width: 80px; height: 60px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--color-divider); }
 
 @media (max-width: 640px) {
   .lf-grid { grid-template-columns: 1fr; }

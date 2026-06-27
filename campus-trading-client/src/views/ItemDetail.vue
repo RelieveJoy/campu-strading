@@ -235,7 +235,7 @@
         ref="chatModalRef"
         :item-id="detail.itemId"
         :receiver-id="chatReceiverId || detail.sellerId"
-        :seller-name="isOwner ? (chatReceiverName || '买家') : detail.sellerName"
+        :contact-name="isOwner ? (chatReceiverName || '买家') : detail.sellerName"
         :item-title="detail.title"
       />
 

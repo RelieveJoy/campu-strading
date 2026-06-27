@@ -15,6 +15,8 @@ public class MessageDTO implements Serializable {
     @NotNull(message = "接收者不能为空")
     private Long receiverId;
 
+    private String sourceType;  // item / lostfound
+
     @NotBlank(message = "消息内容不能为空")
     private String content;
 }
