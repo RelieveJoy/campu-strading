@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.dto.LostFoundDTO;
 import com.campus.dto.LostFoundPageQueryDTO;
 import com.campus.result.PageResult;
@@ -22,6 +23,7 @@ public class LostFoundController {
 
     private final LostFoundService lostFoundService;
 
+    @ApiLog("失物招领列表")
     @Operation(summary = "分页查询失物招领")
     @GetMapping
     public Result<PageResult> list(@RequestParam(required = false) String keyword,
@@ -38,6 +40,7 @@ public class LostFoundController {
         return Result.success(result);
     }
 
+    @ApiLog("失物招领详情")
     @Operation(summary = "失物招领详情")
     @GetMapping("/{id}")
     public Result<LostFoundDetailVO> detail(@PathVariable Long id) {
@@ -46,6 +49,7 @@ public class LostFoundController {
         return Result.success(detail);
     }
 
+    @ApiLog("发布失物招领")
     @Operation(summary = "发布失物招领")
     @PostMapping
     public Result<String> publish(@RequestBody @Valid LostFoundDTO dto) {

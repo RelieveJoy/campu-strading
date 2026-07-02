@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.entity.Banner;
 import com.campus.result.Result;
 import com.campus.service.BannerService;
@@ -20,6 +21,7 @@ public class BannerController {
 
     private final BannerService bannerService;
 
+    @ApiLog("轮播图")
     @Operation(summary = "获取启用的轮播图列表")
     @GetMapping
     public Result<List<Banner>> list() {

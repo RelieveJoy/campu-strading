@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.entity.Announcement;
 import com.campus.result.Result;
 import com.campus.service.AnnouncementService;
@@ -20,6 +21,7 @@ public class AnnouncementController {
 
     private final AnnouncementService announcementService;
 
+    @ApiLog("公告")
     @Operation(summary = "获取最新公告列表")
     @GetMapping
     public Result<List<Announcement>> list(@RequestParam(defaultValue = "5") int limit) {

@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.result.Result;
 import com.campus.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,7 @@ public class SearchController {
 
     private final SearchService searchService;
 
+    @ApiLog("搜索建议")
     @Operation(summary = "搜索建议")
     @GetMapping("/suggestions")
     public Result<List<String>> suggestions(@RequestParam String q) {

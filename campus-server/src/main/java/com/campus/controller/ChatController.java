@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.context.BaseContext;
 import com.campus.dto.MessageDTO;
 import com.campus.result.Result;
@@ -32,6 +33,7 @@ public class ChatController {
     private final MessageService messageService;
     private final SimpMessagingTemplate messagingTemplate;
 
+    @ApiLog("查聊天")
     @Operation(summary = "查询某个商品下与对方的聊天记录")
     @GetMapping("/{itemId}")
     public Result<List<MessageVO>> getHistory(@PathVariable Long itemId,
@@ -41,6 +43,7 @@ public class ChatController {
         return Result.success(list);
     }
 
+    @ApiLog("发消息")
     @Operation(summary = "发送消息")
     @PostMapping
     public Result<MessageVO> send(@RequestBody @Valid MessageDTO dto) {
@@ -57,6 +60,7 @@ public class ChatController {
         return Result.success(vo);
     }
 
+    @ApiLog("对话列表")
     @Operation(summary = "获取当前用户的对话列表")
     @GetMapping("/conversations")
     public Result<List<ConversationVO>> listConversations() {
@@ -64,6 +68,7 @@ public class ChatController {
         return Result.success(list);
     }
 
+    @ApiLog("标记已读")
     @Operation(summary = "标记商品消息为已读")
     @PostMapping("/{itemId}/read")
     public Result<String> markRead(@PathVariable Long itemId,

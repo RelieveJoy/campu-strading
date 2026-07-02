@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.dto.FavoriteDTO;
 import com.campus.result.Result;
 import com.campus.service.FavoriteService;
@@ -22,6 +23,7 @@ public class FavoriteController {
     @Autowired
     private FavoriteService favoriteService;
 
+    @ApiLog("收藏")
     @Operation(summary = "收藏商品")
     @PostMapping
     public Result<String> add(@RequestBody @Valid FavoriteDTO favoriteDTO) {
@@ -30,6 +32,7 @@ public class FavoriteController {
         return Result.success();
     }
 
+    @ApiLog("取消收藏")
     @Operation(summary = "取消收藏")
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable Long id) {
@@ -38,6 +41,7 @@ public class FavoriteController {
         return Result.success();
     }
 
+    @ApiLog("查收藏")
     @Operation(summary = "我的收藏列表")
     @GetMapping
     public Result<List<FavoriteVO>> list() {
@@ -46,6 +50,7 @@ public class FavoriteController {
         return Result.success(list);
     }
 
+    @ApiLog("查收藏状态")
     @Operation(summary = "检查是否已收藏")
     @GetMapping("/check")
     public Result<Boolean> check(@RequestParam Long itemId) {

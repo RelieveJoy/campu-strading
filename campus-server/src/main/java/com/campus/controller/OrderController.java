@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.dto.OrdersDTO;
 import com.campus.dto.OrdersPageQueryDTO;
 import com.campus.result.PageResult;
@@ -22,6 +23,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @ApiLog("下单")
     @Operation(summary = "创建订单")
     @PostMapping
     public Result<String> create(@RequestBody @Valid OrdersDTO ordersDTO) {
@@ -30,6 +32,7 @@ public class OrderController {
         return Result.success();
     }
 
+    @ApiLog("确认订单")
     @Operation(summary = "确认完成订单")
     @PutMapping("/{id}/confirm")
     public Result<String> confirm(@PathVariable Long id) {
@@ -38,6 +41,7 @@ public class OrderController {
         return Result.success();
     }
 
+    @ApiLog("取消订单")
     @Operation(summary = "取消订单")
     @PutMapping("/{id}/cancel")
     public Result<String> cancel(@PathVariable Long id) {
@@ -46,6 +50,7 @@ public class OrderController {
         return Result.success();
     }
 
+    @ApiLog("查订单")
     @Operation(summary = "分页查询订单")
     @GetMapping
     public Result<PageResult> pageQuery(OrdersPageQueryDTO dto) {
@@ -54,6 +59,7 @@ public class OrderController {
         return Result.success(pageResult);
     }
 
+    @ApiLog("订单详情")
     @Operation(summary = "订单详情")
     @GetMapping("/{id}")
     public Result<OrderVO> getById(@PathVariable Long id) {

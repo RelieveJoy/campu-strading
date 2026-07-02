@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.dto.ReportDTO;
 import com.campus.result.PageResult;
 import com.campus.result.Result;
@@ -20,6 +21,7 @@ public class ReportController {
 
     private final ReportService reportService;
 
+    @ApiLog("举报")
     @Operation(summary = "提交举报")
     @PostMapping
     public Result<String> submit(@RequestBody @Valid ReportDTO dto) {
@@ -28,6 +30,7 @@ public class ReportController {
         return Result.success();
     }
 
+    @ApiLog("查举报")
     @Operation(summary = "分页查询举报列表（管理员）")
     @GetMapping
     public Result<PageResult> list(@RequestParam(required = false) Integer status,
@@ -38,6 +41,7 @@ public class ReportController {
         return Result.success(result);
     }
 
+    @ApiLog("处理举报")
     @Operation(summary = "标记举报已处理（管理员）")
     @PutMapping("/{id}/resolve")
     public Result<String> markResolved(@PathVariable Long id) {

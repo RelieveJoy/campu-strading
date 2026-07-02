@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.dto.ReviewDTO;
 import com.campus.result.PageResult;
 import com.campus.result.Result;
@@ -25,6 +26,7 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
+    @ApiLog("提交评价")
     @Operation(summary = "提交评价")
     @PostMapping
     public Result<String> submit(@RequestBody @Valid ReviewDTO reviewDTO) {
@@ -33,6 +35,7 @@ public class ReviewController {
         return Result.success();
     }
 
+    @ApiLog("修改评价")
     @Operation(summary = "修改评价")
     @PutMapping("/{reviewId}")
     public Result<String> update(@PathVariable Long reviewId, @RequestBody @Valid ReviewDTO reviewDTO) {
@@ -41,6 +44,7 @@ public class ReviewController {
         return Result.success();
     }
 
+    @ApiLog("查评价")
     @Operation(summary = "商品评价列表")
     @GetMapping("/item/{itemId}")
     public Result<List<ReviewVO>> listByItem(@PathVariable Long itemId) {
@@ -49,6 +53,7 @@ public class ReviewController {
         return Result.success(list);
     }
 
+    @ApiLog("商品评分")
     @Operation(summary = "商品评分摘要")
     @GetMapping("/item/{itemId}/rating")
     public Result<ItemRatingVO> itemRating(@PathVariable Long itemId) {
@@ -57,6 +62,7 @@ public class ReviewController {
         return Result.success(rating);
     }
 
+    @ApiLog("用户评分")
     @Operation(summary = "用户综合评分")
     @GetMapping("/users/{userId}")
     public Result<UserRatingVO> userRating(@PathVariable Long userId) {
@@ -65,6 +71,7 @@ public class ReviewController {
         return Result.success(rating);
     }
 
+    @ApiLog("用户评价列表")
     @Operation(summary = "用户评价列表（他人对该用户所有商品的评价）")
     @GetMapping("/users/{userId}/list")
     public Result<PageResult> listByTargetUser(@PathVariable Long userId,

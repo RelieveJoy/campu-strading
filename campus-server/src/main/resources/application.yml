@@ -10,6 +10,23 @@ spring:
       url: jdbc:mysql://${campus.datasource.host}:${campus.datasource.port}/${campus.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${campus.datasource.username}
       password: ${campus.datasource.password}
+      validation-query: SELECT 1
+      test-while-idle: true
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: ${CAMPUS_DRUID_USERNAME:admin}
+        login-password: ${CAMPUS_DRUID_PASSWORD:admin123}
+        reset-enable: false
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: '*.js,*.css,*.png,*.jpg,/druid/*'
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 1000
   data:
     redis:
       host: ${campus.redis.host}
@@ -29,6 +46,16 @@ spring:
     password: ${CAMPUS_RABBITMQ_PASSWORD:admin}
   elasticsearch:
     uris: http://${CAMPUS_ES_HOST:localhost}:${CAMPUS_ES_PORT:9200}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+  endpoint:
+    health:
+      show-details: always
+
 mybatis:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml

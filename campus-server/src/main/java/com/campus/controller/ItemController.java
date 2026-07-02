@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.ApiLog;
 import com.campus.dto.ItemDTO;
 import com.campus.dto.ItemPageQueryDTO;
 import com.campus.es.ItemSearchService;
@@ -31,6 +32,7 @@ public class ItemController {
     @Autowired
     private ItemSearchService itemSearchService;
 
+    @ApiLog("发布商品")
     @Operation(summary = "发布商品")
     @PostMapping
     public Result<String> add(@RequestBody @Valid ItemDTO itemDTO) {
@@ -39,6 +41,7 @@ public class ItemController {
         return Result.success();
     }
 
+    @ApiLog("编辑商品")
     @Operation(summary = "编辑商品")
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable Long id, @RequestBody @Valid ItemDTO itemDTO) {
@@ -47,6 +50,7 @@ public class ItemController {
         return Result.success();
     }
 
+    @ApiLog("下架商品")
     @Operation(summary = "下架商品")
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable Long id) {
@@ -55,6 +59,7 @@ public class ItemController {
         return Result.success();
     }
 
+    @ApiLog("重新上架")
     @Operation(summary = "重新上架商品")
     @PutMapping("/{id}/relist")
     public Result<String> relist(@PathVariable Long id) {
@@ -63,6 +68,7 @@ public class ItemController {
         return Result.success();
     }
 
+    @ApiLog("查询商品")
     @Operation(summary = "分页查询商品")
     @GetMapping
     public Result<PageResult> pageQuery(ItemPageQueryDTO dto) {
@@ -71,6 +77,7 @@ public class ItemController {
         return Result.success(pageResult);
     }
 
+    @ApiLog("首页商品")
     @Operation(summary = "首页商品列表（缓存）")
     @GetMapping("/home")
     public Result<List<ItemVO>> homeItems() {
@@ -79,6 +86,7 @@ public class ItemController {
         return Result.success(list);
     }
 
+    @ApiLog("商品详情")
     @Operation(summary = "商品详情")
     @GetMapping("/{id}")
     public Result<ItemDetailVO> getById(@PathVariable Long id) {
@@ -88,6 +96,7 @@ public class ItemController {
         return Result.success(detail);
     }
 
+    @ApiLog("ES全量同步")
     @Operation(summary = "全量同步商品到 ES")
     @PostMapping("/es/reindex")
     public Result<String> reindex() {
