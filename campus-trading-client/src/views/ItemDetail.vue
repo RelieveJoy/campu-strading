@@ -226,9 +226,15 @@
             <button v-if="detail.sellerId" class="btn-seller-home" @click="$router.push(`/user/${detail.sellerId}`)">
               <i class="bi bi-person me-1"></i>查看主页
             </button>
+            <button class="btn-report-sm" @click="reportModalRef?.open()">
+              <i class="bi bi-flag me-1"></i>举报
+            </button>
           </div>
         </div>
       </div>
+
+      <!-- 举报弹窗 -->
+      <ReportModal ref="reportModalRef" target-type="item" :target-id="detail.itemId" />
 
       <!-- 联系卖家弹窗 -->
       <ChatModal
@@ -261,6 +267,7 @@ import { createOrder } from '../api/order'
 import { addFavorite, checkFavorite, deleteFavorite, getFavorites } from '../api/favorite'
 import GoodsCard from '../components/GoodsCard.vue'
 import ChatModal from '../components/ChatModal.vue'
+import ReportModal from '../components/ReportModal.vue'
 import RatingStars from '../components/RatingStars.vue'
 import { getItemReviews } from '../api/review'
 
@@ -278,6 +285,7 @@ const isOwner = ref(false)
 const currentImg = ref(0)
 const previewOpen = ref(false)
 const chatModalRef = ref(null)
+const reportModalRef = ref(null)
 const chatReceiverId = ref(null)   // 从对话列表来时指定的接收者
 const chatReceiverName = ref('')   // 接收者姓名
 
@@ -615,6 +623,14 @@ onMounted(async () => {
   transition: all var(--duration-fast);
 }
 .btn-seller-home:hover { background: var(--color-primary); color: #fff; }
+.btn-report-sm {
+  padding: 6px 14px; border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); background: var(--color-bg);
+  color: var(--color-muted); font-size: 0.8125rem;
+  font-family: var(--font-family); cursor: pointer;
+  transition: all var(--duration-fast);
+}
+.btn-report-sm:hover { border-color: var(--color-danger); color: var(--color-danger); }
 
 /* ── Skeleton ── */
 .skeleton-detail { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); }

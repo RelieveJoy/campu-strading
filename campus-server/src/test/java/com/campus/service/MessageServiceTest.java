@@ -56,7 +56,7 @@ class MessageServiceTest {
     @DisplayName("买家对商品发消息给卖家")
     void buyerMessagesSellerAboutItem() {
         BaseContext.setCurrentId(buyerId);
-        MessageVO vo = messageService.send(buyerId, itemId, sellerId, "你好，这个书还在吗？");
+        MessageVO vo = messageService.send(buyerId, itemId, "item", sellerId, "你好，这个书还在吗？");
         assertNotNull(vo.getMessageId());
         assertEquals(buyerId, vo.getSenderId());
         assertEquals(itemId, vo.getItemId());
@@ -66,13 +66,13 @@ class MessageServiceTest {
     @DisplayName("买卖双方聊天记录包含双方消息")
     void historyContainsBothSides() {
         BaseContext.setCurrentId(buyerId);
-        messageService.send(buyerId, itemId, sellerId, "买家：书还在吗");
+        messageService.send(buyerId, itemId, "item", sellerId, "买家：书还在吗");
 
         BaseContext.setCurrentId(sellerId);
-        messageService.send(sellerId, itemId, buyerId, "卖家：还在的");
+        messageService.send(sellerId, itemId, "item", buyerId, "卖家：还在的");
 
         BaseContext.setCurrentId(buyerId);
-        List<MessageVO> history = messageService.getHistory(itemId, buyerId, sellerId);
+        List<MessageVO> history = messageService.getHistory(itemId, "item", buyerId, sellerId);
         assertEquals(2, history.size());
         assertEquals("买家：书还在吗", history.get(0).getContent());
         assertEquals("卖家：还在的", history.get(1).getContent());
@@ -89,35 +89,35 @@ class MessageServiceTest {
 
         // 三个买家各自发消息
         BaseContext.setCurrentId(buyerId);  // buyer01
-        messageService.send(buyerId, itemId, sellerId, "买家1：书还在吗");
+        messageService.send(buyerId, itemId, "item", sellerId, "买家1：书还在吗");
 
         BaseContext.setCurrentId(buyer2Id);
-        messageService.send(buyer2Id, itemId, sellerId, "买家2：能便宜点吗");
+        messageService.send(buyer2Id, itemId, "item", sellerId, "买家2：能便宜点吗");
 
         BaseContext.setCurrentId(buyer3Id);
-        messageService.send(buyer3Id, itemId, sellerId, "买家3：我直接拍了");
+        messageService.send(buyer3Id, itemId, "item", sellerId, "买家3：我直接拍了");
 
         // 卖家先回复买家2
-        messageService.send(sellerId, itemId, buyer2Id, "卖家回复2：可以便宜10块");
+        messageService.send(sellerId, itemId, "item", buyer2Id, "卖家回复2：可以便宜10块");
         // 再回复买家3
-        messageService.send(sellerId, itemId, buyer3Id, "卖家回复3：好的等你拍");
+        messageService.send(sellerId, itemId, "item", buyer3Id, "卖家回复3：好的等你拍");
 
         // 验证：买家2看到的历史包含2条（自己的+卖家的），不包含其他买家的
         BaseContext.setCurrentId(buyer2Id);
-        List<MessageVO> histBuyer2 = messageService.getHistory(itemId, buyer2Id, sellerId);
+        List<MessageVO> histBuyer2 = messageService.getHistory(itemId, "item", buyer2Id, sellerId);
         assertEquals(2, histBuyer2.size());
         assertEquals("买家2：能便宜点吗", histBuyer2.get(0).getContent());
         assertEquals("卖家回复2：可以便宜10块", histBuyer2.get(1).getContent());
 
         // 验证：买家1的历史只有自己的1条（卖家没回复他，且不包含买家2/3的消息）
         BaseContext.setCurrentId(buyerId);
-        List<MessageVO> histBuyer1 = messageService.getHistory(itemId, buyerId, sellerId);
+        List<MessageVO> histBuyer1 = messageService.getHistory(itemId, "item", buyerId, sellerId);
         assertEquals(1, histBuyer1.size());
         assertEquals("买家1：书还在吗", histBuyer1.get(0).getContent());
 
         // 验证：买家3的历史也是2条，不混入别人的
         BaseContext.setCurrentId(buyer3Id);
-        List<MessageVO> histBuyer3 = messageService.getHistory(itemId, buyer3Id, sellerId);
+        List<MessageVO> histBuyer3 = messageService.getHistory(itemId, "item", buyer3Id, sellerId);
         assertEquals(2, histBuyer3.size());
     }
 
@@ -125,10 +125,10 @@ class MessageServiceTest {
     @DisplayName("标记已读")
     void markReadWorks() {
         BaseContext.setCurrentId(buyerId);
-        messageService.send(buyerId, itemId, sellerId, "你好");
+        messageService.send(buyerId, itemId, "item", sellerId, "你好");
 
-        messageService.markRead(sellerId, itemId);
-        List<MessageVO> history = messageService.getHistory(itemId, buyerId, sellerId);
+        messageService.markRead(sellerId, itemId, "item");
+        List<MessageVO> history = messageService.getHistory(itemId, "item", buyerId, sellerId);
         assertEquals(1, history.get(0).getIsRead());
     }
 

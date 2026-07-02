@@ -5,7 +5,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
       - mysql-data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -32,8 +32,8 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: campus-rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5673:5672"
+      - "15673:15672"
     environment:
       RABBITMQ_DEFAULT_USER: ${CAMPUS_RABBITMQ_USERNAME:-admin}
       RABBITMQ_DEFAULT_PASS: ${CAMPUS_RABBITMQ_PASSWORD:-admin}

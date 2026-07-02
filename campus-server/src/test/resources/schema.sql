@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS report;
 DROP TABLE IF EXISTS lost_found;
 DROP TABLE IF EXISTS announcement;
 DROP TABLE IF EXISTS banner;
@@ -92,6 +93,7 @@ CREATE TABLE favorite (
 CREATE TABLE message (
     message_id  BIGINT   NOT NULL AUTO_INCREMENT,
     item_id     BIGINT   NOT NULL,
+    source_type VARCHAR(10) DEFAULT 'item',
     sender_id   BIGINT   NOT NULL,
     receiver_id BIGINT   NOT NULL,
     content     TEXT     NOT NULL,
@@ -166,4 +168,17 @@ CREATE TABLE lost_found (
     create_time   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     update_time   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (lost_found_id)
+);
+
+CREATE TABLE report (
+    report_id   BIGINT       NOT NULL AUTO_INCREMENT,
+    reporter_id BIGINT       NOT NULL,
+    target_type VARCHAR(10)  NOT NULL,
+    target_id   BIGINT       NOT NULL,
+    reason      VARCHAR(100) NOT NULL,
+    description TEXT         DEFAULT NULL,
+    status      TINYINT      DEFAULT 1,
+    create_time TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (report_id)
 );

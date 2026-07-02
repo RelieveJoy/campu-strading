@@ -175,3 +175,18 @@ CREATE TABLE IF NOT EXISTS lost_found (
     KEY idx_category (category),
     KEY idx_user (user_id)
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS report (
+    report_id   BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    reporter_id BIGINT       NOT NULL COMMENT '举报人ID',
+    target_type VARCHAR(10)  NOT NULL COMMENT 'item=商品 user=用户',
+    target_id   BIGINT       NOT NULL COMMENT '被举报目标ID',
+    reason      VARCHAR(100) NOT NULL COMMENT '举报原因',
+    description TEXT         DEFAULT NULL COMMENT '详细描述',
+    status      TINYINT      DEFAULT 1 COMMENT '1待处理 2已处理',
+    create_time DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (report_id),
+    KEY idx_status (status),
+    KEY idx_target (target_type, target_id)
+) ENGINE=InnoDB;

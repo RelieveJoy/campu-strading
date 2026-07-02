@@ -55,6 +55,10 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               联系TA
             </button>
+            <button class="lfd-btn-outline" @click="reportModalRef?.open()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+              举报
+            </button>
           </div>
         </div>
       </div>
@@ -68,6 +72,7 @@
       :item-title="detail?.title || ''"
       source-type="lostfound"
     />
+    <ReportModal ref="reportModalRef" target-type="lostfound" :target-id="detail?.lostFoundId || 0" />
   </div>
 </template>
 
@@ -76,11 +81,13 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getLostFoundDetail } from '../api/lostfound'
 import ChatModal from '../components/ChatModal.vue'
+import ReportModal from '../components/ReportModal.vue'
 
 const route = useRoute()
 const detail = ref(null)
 const loading = ref(true)
 const chatRef = ref(null)
+const reportModalRef = ref(null)
 
 async function fetchDetail() {
   loading.value = true
@@ -160,6 +167,14 @@ watch(() => route.params.id, fetchDetail)
   transition: background var(--duration-fast);
 }
 .lfd-btn:hover { background: var(--color-primary-hover); }
+.lfd-btn-outline {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 28px; background: var(--color-bg); color: var(--color-muted);
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  font-size: 0.9375rem; font-family: var(--font-family); cursor: pointer;
+  transition: all var(--duration-fast);
+}
+.lfd-btn-outline:hover { border-color: var(--color-danger); color: var(--color-danger); }
 
 .loading-state { text-align: center; color: var(--color-muted); padding: var(--space-xxl); }
 .empty-state { text-align: center; padding: var(--space-xxl); color: var(--color-muted); }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.mapper.ReportMapper">
+
+    <select id="pageQuery" resultType="com.campus.vo.ReportVO">
+        select r.report_id, r.reporter_id, r.target_type, r.target_id,
+               r.reason, r.description, r.status, r.create_time,
+               u.username as reporter_name
+        from report r
+        left join user u on r.reporter_id = u.user_id
+        <where>
+            <if test="status != null">
+                and r.status = #{status}
+            </if>
+        </where>
+        order by r.create_time desc
+    </select>
+
+</mapper>

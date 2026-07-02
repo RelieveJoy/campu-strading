@@ -10,22 +10,31 @@
         </router-link>
 
         <!-- 搜索框 -->
-        <form class="topbar-search" @submit.prevent="doSearch">
-          <div class="search-input-group">
+        <div class="topbar-search" ref="searchWrapRef">
+          <form class="search-input-group" @submit.prevent="doSearch">
             <input
               v-model="searchQuery"
               type="search"
               class="search-input"
               placeholder="搜索商品..."
               autocomplete="off"
+              @input="onSearchInput"
+              @focus="onSearchFocus"
             />
             <button type="submit" class="search-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
             </button>
-          </div>
-        </form>
+          </form>
+          <!-- 搜索建议下拉 -->
+          <ul class="search-suggestions" v-if="suggestions.length > 0" @mouseleave="suggestions = []">
+            <li v-for="s in suggestions" :key="s" @click="pickSuggestion(s)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              {{ s }}
+            </li>
+          </ul>
+        </div>
 
         <!-- Nav links -->
         <div class="topbar-nav" :class="{ open: mobileOpen }">
@@ -98,6 +107,7 @@ import AnnouncementBar from '../components/AnnouncementBar.vue'
 import FooterBar from '../components/FooterBar.vue'
 import LoginModal from './LoginModal.vue'
 import { getAnnouncements } from '../api/announcement'
+import { getSearchSuggestions } from '../api/search'
 
 const router = useRouter()
 const route = useRoute()
@@ -113,13 +123,39 @@ onMounted(async () => {
 
 // ── 搜索 ──
 const searchQuery = ref('')
+const suggestions = ref([])
+let searchTimer = null
+
 function doSearch() {
+  suggestions.value = []
   const q = searchQuery.value.trim()
   if (q) {
     router.push({ path: '/goods', query: { q } })
   } else {
     router.push('/goods')
   }
+}
+
+function onSearchInput() {
+  clearTimeout(searchTimer)
+  const q = searchQuery.value.trim()
+  if (!q || q.length < 1) { suggestions.value = []; return }
+  searchTimer = setTimeout(async () => {
+    try {
+      const res = await getSearchSuggestions(q)
+      suggestions.value = res.data || []
+    } catch { suggestions.value = [] }
+  }, 200)
+}
+
+function onSearchFocus() {
+  if (searchQuery.value.trim()) onSearchInput()
+}
+
+function pickSuggestion(s) {
+  searchQuery.value = s
+  suggestions.value = []
+  doSearch()
 }
 
 // ── 登录状态 ──
@@ -214,7 +250,7 @@ router.beforeEach((to) => {
 .brand-icon { font-size: 1.3rem; }
 .brand-text { font-weight: 700; font-size: 1.0625rem; white-space: nowrap; }
 
-.topbar-search { width: 100%; max-width: 420px; margin: 0 auto; }
+.topbar-search { width: 100%; max-width: 420px; margin: 0 auto; position: relative; }
 .search-input-group {
   display: flex;
   background: #fff;
@@ -234,6 +270,20 @@ router.beforeEach((to) => {
   transition: color var(--duration-fast);
 }
 .search-btn:hover { color: var(--color-primary); }
+
+.search-suggestions {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: #fff; border: 1px solid var(--color-border);
+  border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  list-style: none; padding: 0; margin: 0; z-index: var(--z-dropdown);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+.search-suggestions li {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; font-size: 0.875rem; color: var(--color-ink);
+  cursor: pointer;
+}
+.search-suggestions li:hover { background: var(--color-surface); }
 
 .topbar-nav {
   display: flex; align-items: center; gap: 4px; flex-shrink: 0;
