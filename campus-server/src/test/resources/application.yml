@@ -9,7 +9,7 @@ spring:
         enabled: false
     redis:
       host: localhost
-      port: 6380
+      port: 6379
       password:
       database: 10
   autoconfigure:

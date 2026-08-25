@@ -1,0 +1,64 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Cache Maven deps
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+      - name: Run tests & coverage with Maven
+        run: mvn -B -ntp test
+      - name: Package jar
+        run: mvn -B -ntp -DskipTests package
+      - name: Build server image
+        run: docker build -t campus-server ./campus-server
+      - name: Build client image
+        run: docker build -t campus-client ./campus-trading-client
+  compose-verify:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Restore Maven cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+      - name: Package jar
+        run: mvn -B -ntp -DskipTests package
+      - name: Create .env for CI
+        run: |
+          echo "MYSQL_ROOT_PASSWORD=test123456" > .env
+          echo "JWT_ADMIN_SECRET_KEY=test-admin-secret" >> .env
+          echo "JWT_USER_SECRET_KEY=test-user-secret" >> .env
+      - name: Verify docker compose starts
+        run: |
+          docker compose up -d --build --wait
+          docker compose ps
+          docker compose down
