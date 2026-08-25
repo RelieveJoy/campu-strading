@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS user (
     phone         VARCHAR(20)  DEFAULT NULL COMMENT '手机号',
     avatar        VARCHAR(255) DEFAULT NULL COMMENT '头像',
     status        TINYINT      DEFAULT 1 COMMENT '状态 1正常 0禁用',
+    oauth_github_id BIGINT DEFAULT NULL COMMENT 'GitHub账号ID',
     create_time   DATETIME     DEFAULT CURRENT_TIMESTAMP,
     update_time   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     create_user   BIGINT       DEFAULT NULL,

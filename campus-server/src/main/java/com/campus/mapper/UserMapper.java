@@ -5,6 +5,7 @@ import com.campus.entity.User;
 import com.campus.enumeration.OperationType;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
@@ -42,4 +43,19 @@ public interface UserMapper {
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(User user);
+
+    /**
+     * 根据 GitHub 账号ID 查询用户（OAuth 登录用）
+     */
+    @Select("select * from user where oauth_github_id = #{githubId}")
+    User getByGithubId(Long githubId);
+
+    /**
+     * 新增 OAuth 用户（GitHub 登录自动建号）
+     */
+    @Insert("insert into user(student_id, username, password, avatar, oauth_github_id, status, create_time, update_time, create_user, update_user)" +
+          "values (#{studentId}, #{username}, #{password}, #{avatar},#{oauthGithubId}, #{status}, #{createTime}, #{updateTime}, #{createUser},#{updateUser})")
+    @AutoFill(value = OperationType.INSERT)
+    @Options(useGeneratedKeys = true, keyProperty = "userId")
+    void insertOauthUser(User user);
 }

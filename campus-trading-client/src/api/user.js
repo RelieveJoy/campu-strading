@@ -2,6 +2,8 @@ import request from '../utils/request'
 
 export const login = (data) => request({ url: '/users/login', method: 'post', data })
 
+export const getGithubLoginUrl = () => request({ url: '/oauth/github/login', method: 'get' })
+
 export const register = (data) => request({ url: '/users/register', method: 'post', data })
 
 export const logout = () => request({ url: '/users/logout', method: 'post' })

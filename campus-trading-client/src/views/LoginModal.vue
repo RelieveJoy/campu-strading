@@ -44,6 +44,13 @@
             </button>
           </form>
 
+          <div class="oauth-divider" v-show="tab === 'login'"><span>或</span></div>
+
+          <button class="btn-oauth" v-show="tab === 'login'" @click="handleGithubLogin">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            <span>使用 GitHub 登录</span>
+          </button>
+
           <form v-show="tab === 'register'" @submit.prevent="handleRegister" class="auth-form">
             <div class="field">
               <input v-model="regForm.studentId" type="text" class="field-input"
@@ -86,7 +93,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import { login, register } from '../api/user'
+import { login, register, getGithubLoginUrl } from '../api/user'
 
 const emit = defineEmits(['login-success'])
 const visible = ref(false)
@@ -135,6 +142,14 @@ async function handleLogin() {
     close()
   } catch (e) { /* interceptor handles */ }
   finally { loading.value = false }
+}
+
+async function handleGithubLogin() {
+  try {
+    const res = await getGithubLoginUrl()
+    // 拿到授权 URL，整页跳转到 GitHub
+    window.location.href = res.data
+  } catch (e) { /* interceptor handles */ }
 }
 
 async function handleRegister() {
@@ -250,6 +265,23 @@ defineExpose({ open, close })
 }
 .btn-submit:hover:not(:disabled) { background: var(--color-primary-hover); }
 .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.oauth-divider {
+  display: flex; align-items: center; gap: var(--space-md);
+  color: var(--color-muted); font-size: 0.75rem; margin-top: var(--space-sm);
+}
+.oauth-divider::before, .oauth-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--color-border);
+}
+.btn-oauth {
+  display: flex; align-items: center; justify-content: center; gap: var(--space-sm);
+  width: 100%; padding: 11px 0; margin-top: var(--space-sm);
+  background: var(--color-surface); color: var(--color-ink);
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  font-size: var(--font-body-size); font-weight: 600; font-family: var(--font-family);
+  cursor: pointer; transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+.btn-oauth:hover { border-color: var(--color-primary); }
 
 .spinner {
   width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);

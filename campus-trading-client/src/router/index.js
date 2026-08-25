@@ -8,6 +8,11 @@ const routes = [
     component: () => import('../views/LoginView.vue'),
   },
   {
+    path: '/oauth/callback',
+    name: 'OAuthCallback',
+    component: () => import('../views/OAuthCallbackView.vue'),
+  },
+  {
     path: '/',
     component: LayoutView,
     children: [

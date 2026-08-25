@@ -21,6 +21,7 @@ public class User implements Serializable {
     private String studentId;
     private String username;
     private String password;
+    private Long oauthGithubId;
     private String phone;
     private String avatar;
     private String bio;
