@@ -1,6 +1,7 @@
 package com.campus.controller;
 
 import com.campus.annotation.ApiLog;
+import com.campus.annotation.RateLimiter;
 import com.campus.dto.OrdersDTO;
 import com.campus.dto.OrdersPageQueryDTO;
 import com.campus.result.PageResult;
@@ -24,6 +25,7 @@ public class OrderController {
     private OrderService orderService;
 
     @ApiLog("下单")
+    @RateLimiter(key = "order", limit = 30)
     @Operation(summary = "创建订单")
     @PostMapping
     public Result<String> create(@RequestBody @Valid OrdersDTO ordersDTO) {

@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.RateLimiter;
 import com.campus.constant.MessageConstant;
 import com.campus.result.Result;
 import com.campus.utils.AliOssUtil;
@@ -25,6 +26,7 @@ public class CommonController {
     @Autowired
     private AliOssUtil aliOssUtil;
 
+    @RateLimiter(key = "upload", limit = 20)
     @Operation(summary = "文件上传")
     @PostMapping("/upload")
     public Result<String> upload(@RequestParam("file") MultipartFile file) {

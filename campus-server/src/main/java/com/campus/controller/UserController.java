@@ -1,5 +1,6 @@
 package com.campus.controller;
 
+import com.campus.annotation.RateLimiter;
 import com.campus.constant.JwtClaimsConstant;
 import com.campus.constant.MessageConstant;
 import com.campus.context.BaseContext;
@@ -62,6 +63,7 @@ public class UserController {
      * @param userLoginDTO
      * @return
      */
+    @RateLimiter(key = "login", limit = 10)
     @Operation(summary = "用户登录")
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
@@ -95,6 +97,7 @@ public class UserController {
      * @param userRegisterDTO
      * @return
      */
+    @RateLimiter(key = "register", limit = 3)
     @Operation(summary = "用户注册")
     @PostMapping("/register")
     public Result<String> register(@RequestBody @Valid UserRegisterDTO userRegisterDTO) {

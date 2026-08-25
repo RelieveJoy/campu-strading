@@ -2,11 +2,15 @@ package com.campus.handler;
 
 import com.campus.constant.MessageConstant;
 import com.campus.exception.BaseException;
+import com.campus.exception.RateLimitExceededException;
 import com.campus.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.stream.Collectors;
@@ -17,6 +21,16 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    /**
+     * 接口限流异常 → HTTP 429
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public Result exceptionHandler(RateLimitExceededException ex) {
+        log.warn("接口限流：{}", ex.getMessage());
+        return Result.error(ex.getMessage());
+    }
 
     /**
      * 捕获业务异常
