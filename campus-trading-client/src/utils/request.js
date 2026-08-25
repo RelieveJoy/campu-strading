@@ -27,12 +27,16 @@ request.interceptors.response.use(
     return res
   },
   error => {
-    if (error.response && error.response.status === 401) {
+    const status = error.response && error.response.status
+    if (status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       window.location.href = '/login'
+      return Promise.reject(error)
     }
-    ElMessage.error(error.message || '网络错误')
+    // 优先用后端返回的业务信息（如限流429的msg），拿不到再用Axios原始错误
+    const msg = (error.response?.data?.msg) || error.message || '网络错误'
+    ElMessage.error(msg)
     return Promise.reject(error)
   }
 )
